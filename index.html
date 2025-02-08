@@ -14,6 +14,7 @@
             justify-content: center;
             min-height: 100vh;
             background: black;
+            flex-direction: column;
         }
         video {
             position: fixed;
@@ -67,6 +68,11 @@
         .hidden {
             display: none;
         }
+        img {
+            margin-top: 15px;
+            max-width: 100%;
+            border-radius: 10px;
+        }
     </style>
 </head>
 <body>
@@ -83,18 +89,18 @@
     <input type="file" id="fileInput" accept="image/*" class="mb-4 p-2 w-full text-black bg-white rounded">
     <button id="uploadBtn" class="btn mb-4">🚀 Upload & Enhance</button>
     <p id="status" class="text-sm text-green-300"></p>
-    <a id="downloadLink" class="btn hidden" download>⬇ Download Enhanced Photo</a>
+    <img id="hasilGambar" class="hidden" alt="Hasil Enhance">
 </div>
 
 <script>
 document.getElementById("uploadBtn").addEventListener("click", async () => {
     const fileInput = document.getElementById("fileInput").files[0];
     const statusText = document.getElementById("status");
-    const downloadBtn = document.getElementById("downloadLink");
+    const hasilGambar = document.getElementById("hasilGambar");
 
     if (!fileInput) return alert("Pilih gambar dulu bro!");
 
-    downloadBtn.classList.add("hidden");
+    hasilGambar.classList.add("hidden");
     statusText.innerText = "🔄 Mengupload gambar...";
 
     try {
@@ -114,31 +120,16 @@ document.getElementById("uploadBtn").addEventListener("click", async () => {
         
         // Proses Enhance di Remini API
         let enhanceUrl = `https://apii.baguss.web.id/tools/remini?apikey=bagus&url=${encodeURIComponent(imageUrl)}`;
-        let enhanceRes = await fetch(enhanceUrl).then(res => res.json());
-
-        if (!enhanceRes.status || !enhanceRes.result.url) throw new Error("Gagal memproses gambar!");
-        let enhancedUrl = enhanceRes.result.url;
-
-        statusText.innerText = "🔄 Menyimpan hasil...";
         
-        // Download hasil dari API lalu re-upload ke FileZone
-        let enhancedBlob = await fetch(enhancedUrl).then(res => res.blob());
+        let response = await fetch(enhanceUrl);
+        if (!response.ok) throw new Error("Gagal fetch API! Status: " + response.status);
 
-        const resultForm = new FormData();
-        resultForm.append("file", enhancedBlob, "enhanced.jpg");
-
-        let resultUpload = await fetch("https://filezone-api.caliph.dev/upload", {
-            method: "POST",
-            body: resultForm,
-        }).then(res => res.json());
-
-        if (!resultUpload.status || !resultUpload.result.url_file) throw new Error("Gagal menyimpan hasil!");
-
-        let finalUrl = resultUpload.result.url_file;
+        let blob = await response.blob(); // Ambil sebagai binary data
+        let enhancedImageUrl = URL.createObjectURL(blob); // Ubah jadi URL untuk ditampilkan
 
         statusText.innerText = "✅ Foto berhasil ditingkatkan!";
-        downloadBtn.href = finalUrl;
-        downloadBtn.classList.remove("hidden");
+        hasilGambar.src = enhancedImageUrl;
+        hasilGambar.classList.remove("hidden");
 
     } catch (error) {
         statusText.innerText = "❌ Terjadi kesalahan, coba lagi!";
