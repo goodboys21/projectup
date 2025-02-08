@@ -10,7 +10,7 @@
 
     <div class="bg-white p-6 rounded-lg shadow-md w-full max-w-md">
         <h1 class="text-2xl font-bold text-center text-blue-600 mb-4">Uploader ProjectUp</h1>
-        
+
         <!-- Input File -->
         <input type="file" id="fileInput" class="w-full p-2 border rounded mb-4" />
 
@@ -33,27 +33,21 @@
         async function uploadFile() {
             const fileInput = document.getElementById("fileInput");
             const file = fileInput.files[0];
-
             if (!file) return alert("Pilih file dulu bro!");
 
             const formData = new FormData();
             formData.append("file", file);
 
             try {
-                const response = await fetch("https://filezone-api.caliph.dev/upload", {
+                const response = await fetch("/api/upload", { // Proxy API di Vercel
                     method: "POST",
                     body: formData
                 });
 
                 const data = await response.json();
-
-                if (data.status && data.result.url_file) {
-                    const originalUrl = data.result.url_file;
-                    const fileName = originalUrl.split("/").pop(); // Ambil nama file
-                    const proxyUrl = `https://projectup.vercel.app/file/${fileName}`; // Proxy ke domain lo
-
-                    document.getElementById("fileLink").href = proxyUrl;
-                    document.getElementById("fileLink").innerText = proxyUrl;
+                if (data.success) {
+                    document.getElementById("fileLink").href = data.url;
+                    document.getElementById("fileLink").innerText = data.url;
                     document.getElementById("result").classList.remove("hidden");
                     document.getElementById("errorMsg").classList.add("hidden");
                 } else {
