@@ -3,21 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Uploader ProjectUp</title>
+    <title>Enhance Foto - ProjectUp</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
 <body class="bg-gray-100 flex flex-col items-center justify-center min-h-screen p-6">
-
-    <div class="bg-white p-6 rounded-lg shadow-md w-full max-w-md">
-        <h1 class="text-2xl font-bold text-center text-blue-600 mb-4">Uploader ProjectUp</h1>
-
-        <form action="/api/upload" method="post" enctype="multipart/form-data" class="text-center">
-            <input type="file" name="file" class="w-full p-2 border rounded mb-4" required>
-            <button type="submit" class="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded transition">
-                Upload
-            </button>
-        </form>
+    <div class="bg-white p-6 rounded-lg shadow-md w-full max-w-md text-center">
+        <h1 class="text-2xl font-bold text-blue-600 mb-4">Enhance Foto - ProjectUp</h1>
+        <input type="file" id="fileInput" class="w-full p-2 border rounded mb-4" accept="image/*" required>
+        <button onclick="uploadFile()" class="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded transition">
+            Upload & HD-kan
+        </button>
+        <div id="loading" class="mt-4 text-gray-600 hidden">Memproses...</div>
+        <div id="result" class="mt-4 hidden">
+            <h2 class="text-lg font-semibold">Hasil:</h2>
+            <a id="downloadLink" href="#" target="_blank">
+                <img id="enhancedImage" class="mt-2 rounded shadow-md w-full">
+            </a>
+        </div>
     </div>
 
+    <script>
+        async function uploadFile() {
+            const fileInput = document.getElementById('fileInput');
+            if (!fileInput.files.length) {
+                alert("Pilih gambar terlebih dahulu!");
+                return;
+            }
+
+            const file = fileInput.files[0];
+            const formData = new FormData();
+            formData.append("file", file);
+
+            document.getElementById('loading').classList.remove("hidden");
+
+            try {
+                // Upload ke filezone-api
+                const uploadResponse = await fetch("https://filezone-api.caliph.dev/upload", {
+                    method: "POST",
+                    body: formData
+                });
+                const uploadResult = await uploadResponse.json();
+
+                if (!uploadResult.status) throw new Error("Upload gagal");
+
+                const imageUrl = uploadResult.result.url_file;
+
+                // Proses di API Remini
+                const hdUrl = `https://apii.baguss.web.id/tools/remini?apikey=bagus&url=${encodeURIComponent(imageUrl)}`;
+                
+                // Tampilkan hasil
+                document.getElementById("enhancedImage").src = hdUrl;
+                document.getElementById("downloadLink").href = hdUrl;
+                document.getElementById("result").classList.remove("hidden");
+            } catch (error) {
+                alert("Terjadi kesalahan: " + error.message);
+            } finally {
+                document.getElementById('loading').classList.add("hidden");
+            }
+        }
+    </script>
 </body>
-</html>
+    </html>
