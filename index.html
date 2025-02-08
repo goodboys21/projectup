@@ -6,21 +6,15 @@
     <title>HD Enhancer | ProjectUp</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Styling video agar jadi background penuh */
-        .video-container {
+        /* Video Background */
+        .video-bg {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            overflow: hidden;
-            z-index: -1;
-        }
-
-        .video-container video {
-            width: 100%;
-            height: 100%;
             object-fit: cover;
+            z-index: -1;
         }
 
         /* Styling body */
@@ -28,7 +22,6 @@
             color: white;
             height: 100vh;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
             font-family: 'Arial', sans-serif;
@@ -36,19 +29,19 @@
             overflow: hidden;
         }
 
-        /* Kotak utama dengan efek blur transparan */
+        /* Kotak utama dengan blur */
         .container {
             width: 90%;
             max-width: 600px;
             text-align: center;
             padding: 20px;
-            background: rgba(255, 255, 255, 0.15); /* Warna putih dengan transparansi */
-            backdrop-filter: blur(20px); /* Efek blur */
+            background: rgba(255, 255, 255, 0.2); /* Putih transparan */
+            backdrop-filter: blur(10px); /* Blur beneran */
             border-radius: 12px;
             box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
         }
 
-        /* Drop-zone untuk upload gambar */
+        /* Drop-zone */
         .drop-zone {
             border: 2px dashed rgba(255, 255, 255, 0.7);
             padding: 30px;
@@ -76,21 +69,17 @@
             background: #4C1D95;
             transform: scale(1.05);
         }
-
-        /* Sembunyikan elemen */
-        .hidden { display: none; }
     </style>
 </head>
 <body>
 
     <!-- Video Background -->
-    <div class="video-container">
-        <video autoplay loop muted>
-            <source src="https://files.catbox.moe/4u8827.mp4" type="video/mp4">
-            Browser kamu tidak mendukung video HTML5.
-        </video>
-    </div>
+    <video class="video-bg" autoplay loop muted>
+        <source src="https://files.catbox.moe/4u8827.mp4" type="video/mp4">
+        Browser kamu tidak mendukung video HTML5.
+    </video>
 
+    <!-- Konten -->
     <div class="container">
         <h1 class="text-2xl font-bold mb-4">🔍 HD-kan Foto Kamu</h1>
 
@@ -102,112 +91,7 @@
         <button onclick="uploadFile()" id="uploadBtn" class="btn-modern">
             🚀 Proses Sekarang
         </button>
-
-        <div id="progress" class="hidden mt-4">
-            <p class="text-sm text-gray-300">Mengunggah...</p>
-            <div class="w-full bg-gray-600 rounded-full h-2 mt-1">
-                <div id="progressBar" class="h-2 bg-purple-500 rounded-full transition-all"></div>
-            </div>
-        </div>
-
-        <div id="result" class="hidden mt-6">
-            <h2 class="text-lg font-semibold">Hasil HD:</h2>
-            <img id="enhancedImage" class="mt-4 rounded-lg shadow-md border border-gray-300 w-full">
-            <a id="downloadBtn" href="#" class="btn-modern block mt-4">📥 Download Gambar</a>
-        </div>
     </div>
-
-    <script>
-        const dropZone = document.getElementById("dropZone");
-        const fileInput = document.getElementById("fileInput");
-
-        dropZone.addEventListener("click", () => fileInput.click());
-        dropZone.addEventListener("dragover", (e) => {
-            e.preventDefault();
-            dropZone.style.background = "rgba(255, 255, 255, 0.3)";
-        });
-        dropZone.addEventListener("dragleave", () => dropZone.style.background = "rgba(255, 255, 255, 0.2)");
-        dropZone.addEventListener("drop", (e) => {
-            e.preventDefault();
-            dropZone.style.background = "rgba(255, 255, 255, 0.2)";
-            fileInput.files = e.dataTransfer.files;
-        });
-
-        async function uploadFile() {
-            const uploadBtn = document.getElementById('uploadBtn');
-            const progress = document.getElementById('progress');
-            const progressBar = document.getElementById('progressBar');
-            const resultDiv = document.getElementById("result");
-            const enhancedImage = document.getElementById("enhancedImage");
-            const downloadBtn = document.getElementById("downloadBtn");
-
-            if (!fileInput.files.length) {
-                alert("Pilih gambar terlebih dahulu!");
-                return;
-            }
-
-            uploadBtn.innerText = "🔄 Sedang Diproses...";
-            uploadBtn.disabled = true;
-            progress.classList.remove("hidden");
-            progressBar.style.width = "20%";
-
-            const file = fileInput.files[0];
-            const formData = new FormData();
-            formData.append("file", file);
-
-            try {
-                const uploadResponse = await fetch("https://filezone-api.caliph.dev/upload", {
-                    method: "POST",
-                    body: formData
-                });
-                progressBar.style.width = "50%";
-
-                const uploadResult = await uploadResponse.json();
-                if (!uploadResult.status) throw new Error("Upload gagal");
-
-                const imageUrl = uploadResult.result.url_file;
-                const hdUrl = `https://apii.baguss.web.id/tools/remini?apikey=bagus&url=${encodeURIComponent(imageUrl)}`;
-
-                enhancedImage.src = hdUrl;
-                resultDiv.classList.remove("hidden");
-
-                progressBar.style.width = "80%";
-
-                const hdFile = await fetch(hdUrl);
-                const hdBlob = await hdFile.blob();
-                const hdFormData = new FormData();
-                hdFormData.append("file", hdBlob, "enhanced.jpg");
-
-                const finalUploadResponse = await fetch("https://filezone-api.caliph.dev/upload", {
-                    method: "POST",
-                    body: hdFormData
-                });
-
-                const finalUploadResult = await finalUploadResponse.json();
-                if (!finalUploadResult.status) throw new Error("Upload hasil HD gagal");
-
-                downloadBtn.href = finalUploadResult.result.url;
-                downloadBtn.setAttribute("download", "HD-Image.jpg");
-
-                setTimeout(() => {
-                    const link = document.createElement("a");
-                    link.href = finalUploadResult.result.url;
-                    link.setAttribute("download", "HD-Image.jpg");
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                }, 1000);
-
-                progressBar.style.width = "100%";
-            } catch (error) {
-                alert("Terjadi kesalahan: " + error.message);
-            } finally {
-                uploadBtn.innerText = "🚀 Proses Sekarang";
-                uploadBtn.disabled = false;
-                setTimeout(() => progress.classList.add("hidden"), 2000);
-            }
-        }
-    </script>
 
 </body>
 </html>
