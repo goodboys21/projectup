@@ -3,151 +3,149 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Photo Enhancer</title>
+    <title>BagusHD - AI Photo Enhancer</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: Arial, sans-serif;
-        }
-
+        /* Video Background */
         body {
-            background: url('https://files.catbox.moe/4u8827.mp4') no-repeat center center fixed;
-            background-size: cover;
+            min-height: 100vh;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            height: 100vh;
+            overflow: hidden;
+            position: relative;
         }
 
-        .container {
-            width: 90%;
-            max-width: 400px;
-            padding: 20px;
+        video {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1;
+        }
+
+        /* Card Upload */
+        .card {
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
-            border-radius: 15px;
-            text-align: center;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-        }
-
-        h1 {
-            color: white;
-            font-size: 22px;
-            margin-bottom: 15px;
-        }
-
-        .drop-area {
-            border: 2px dashed #3498db;
             padding: 20px;
-            border-radius: 10px;
-            cursor: pointer;
+            border-radius: 15px;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
             color: white;
+            animation: fadeIn 1s ease-in-out;
         }
 
-        .drop-area:hover {
-            background: rgba(255, 255, 255, 0.2);
+        @keyframes fadeIn {
+            from {opacity: 0; transform: translateY(-10px);}
+            to {opacity: 1; transform: translateY(0);}
         }
 
-        .drop-area p {
-            margin: 10px 0 0;
-        }
-
-        button {
-            width: 100%;
+        /* Button Style */
+        .btn {
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
             padding: 12px;
-            margin: 10px 0;
-            border: none;
+            color: white;
             border-radius: 8px;
-            font-size: 16px;
             font-weight: bold;
-            cursor: pointer;
             transition: 0.3s;
+            width: 100%;
+            display: block;
+            text-align: center;
+        }
+
+        .btn:hover {
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+        }
+
+        /* Logo "BagusHD" */
+        .logo {
+            position: absolute;
+            top: 15px;
+            left: 20px;
+            font-size: 1.5rem;
+            font-weight: bold;
             color: white;
-        }
-
-        .upload-btn {
-            background: #e74c3c;
-            display: none;
-        }
-
-        .download-btn {
-            background: #2ecc71;
-            display: none;
-        }
-
-        button:hover {
-            opacity: 0.8;
-        }
-
-        #fileInput {
-            display: none;
-        }
-
-        #status {
-            color: white;
-            font-size: 14px;
-            margin-top: 10px;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <h1>✨ AI Photo Enhancer</h1>
-        
-        <div class="drop-area" id="dropArea">
-            <p>📂 Drag & Drop your file here or click to select</p>
-        </div>
-        <input type="file" id="fileInput" accept="image/*">
+    <!-- Video Background -->
+    <video autoplay muted loop>
+        <source src="https://files.catbox.moe/4u8827.mp4" type="video/mp4">
+    </video>
 
-        <button class="upload-btn" id="uploadBtn">🚀 Upload & Enhance</button>
-        <button class="download-btn" id="downloadBtn">⬇ Download Enhanced Photo</button>
+    <div class="logo">BagusHD</div>
 
-        <p id="status">📂 Pilih foto untuk di-enhance</p>
+    <div class="card">
+        <h1 class="text-2xl font-bold mb-4">✨ AI Photo Enhancer</h1>
+        <input type="file" id="fileInput" class="mb-4 p-2 w-full text-black bg-white rounded">
+        <button id="uploadBtn" class="btn mb-4">🚀 Upload & Enhance</button>
+        <p id="status" class="text-sm text-green-300"></p>
+        <a id="downloadLink" class="btn hidden" download>⬇ Download Enhanced Photo</a>
     </div>
 
     <script>
-        const dropArea = document.getElementById("dropArea");
-        const fileInput = document.getElementById("fileInput");
-        const uploadBtn = document.getElementById("uploadBtn");
-        const downloadBtn = document.getElementById("downloadBtn");
-        const statusText = document.getElementById("status");
+        document.getElementById("uploadBtn").addEventListener("click", async () => {
+            const fileInput = document.getElementById("fileInput").files[0];
+            if (!fileInput) return alert("Pilih gambar dulu bro!");
 
-        dropArea.addEventListener("click", () => fileInput.click());
+            const formData = new FormData();
+            formData.append("file", fileInput);
 
-        dropArea.addEventListener("dragover", (event) => {
-            event.preventDefault();
-            dropArea.style.background = "rgba(255, 255, 255, 0.2)";
-        });
+            document.getElementById("status").innerText = "🔄 Mengupload gambar...";
+            
+            try {
+                // Upload ke FileZone
+                let uploadRes = await fetch("https://filezone-api.caliph.dev/upload", {
+                    method: "POST",
+                    body: formData
+                }).then(res => res.json());
 
-        dropArea.addEventListener("dragleave", () => {
-            dropArea.style.background = "transparent";
-        });
+                if (!uploadRes.status) {
+                    document.getElementById("status").innerText = "❌ Gagal mengupload!";
+                    return;
+                }
 
-        dropArea.addEventListener("drop", (event) => {
-            event.preventDefault();
-            dropArea.style.background = "transparent";
-            fileInput.files = event.dataTransfer.files;
-            showUploadButton();
-        });
+                let imageUrl = uploadRes.result.url_file;
+                document.getElementById("status").innerText = "✅ Foto berhasil diunggah! Sedang diproses...";
 
-        fileInput.addEventListener("change", showUploadButton);
+                // Proses Enhance di Remini API
+                let enhanceUrl = `https://apii.baguss.web.id/tools/remini?apikey=bagus&url=${encodeURIComponent(imageUrl)}`;
+                let enhanceRes = await fetch(enhanceUrl);
+                let enhanceBlob = await enhanceRes.blob();
 
-        function showUploadButton() {
-            if (fileInput.files.length > 0) {
-                uploadBtn.style.display = "block";
-                statusText.innerText = "✅ Foto siap untuk di-enhance!";
+                // Upload hasil ke FileZone lagi
+                const resultForm = new FormData();
+                resultForm.append("file", enhanceBlob, "enhanced.jpg");
+
+                let resultUpload = await fetch("https://filezone-api.caliph.dev/upload", {
+                    method: "POST",
+                    body: resultForm
+                }).then(res => res.json());
+
+                if (!resultUpload.status) {
+                    document.getElementById("status").innerText = "❌ Gagal menyimpan hasil!";
+                    return;
+                }
+
+                let finalUrl = resultUpload.result.url_file;
+
+                document.getElementById("status").innerText = "✅ Foto berhasil ditingkatkan!";
+                let downloadLink = document.getElementById("downloadLink");
+                downloadLink.href = finalUrl;
+                downloadLink.classList.remove("hidden");
+
+            } catch (error) {
+                document.getElementById("status").innerText = "❌ Terjadi kesalahan, coba lagi!";
             }
-        }
-
-        uploadBtn.addEventListener("click", function() {
-            statusText.innerText = "⏳ Memproses foto...";
-            setTimeout(() => {
-                statusText.innerText = "✅ Foto berhasil di-enhance!";
-                downloadBtn.style.display = "block";
-            }, 2000);
         });
     </script>
 
