@@ -30,6 +30,7 @@
 
         /* Efek ketik + hapus */
         /* Biar tulisan "Bagus HD" tetap di pojok kiri atas */
+/* Biar tulisan "Bagus HD" tetap di pojok kiri atas dan nggak ketiban */
 .typing-effect {
     position: fixed;
     top: 20px;
@@ -41,7 +42,10 @@
     overflow: hidden;
     border-right: 3px solid white;
     animation: typing 3s steps(15, end) infinite, blink 0.6s infinite;
-    z-index: 1000; /* Supaya selalu di atas */
+    z-index: 9999; /* Supaya selalu paling atas */
+    background: rgba(0, 0, 0, 0.5); /* Tambahin background biar jelas */
+    padding: 5px 10px; /* Biar ada space */
+    border-radius: 5px; /* Biar nggak kaku */
 }
 
         @keyframes typing {
