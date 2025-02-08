@@ -116,29 +116,36 @@
             statusText.innerText = "🔄 Mengupload gambar...";
 
             try {
-                // Upload ke CDN NKHM
-                let uploadRes = await fetch("https://cdn.nkhm.xyz/upload", {
+                // Upload ke cdn.acaw.my.id
+                let uploadRes = await fetch("https://cdn.acaw.my.id/upload", {
                     method: "POST",
                     body: formData
                 }).then(res => res.json());
 
-                if (!uploadRes || !uploadRes.files) throw new Error("Gagal upload ke CDN!");
-                let imageUrl = uploadRes.files;
+                if (!uploadRes.fileUrl) throw new Error("Gagal upload ke server!");
+                let imageUrl = uploadRes.fileUrl;
 
                 statusText.innerText = "✅ Foto berhasil diunggah! Sedang diproses...";
 
                 // Proses Enhance di Remini API
-                let enhanceUrl = `https://api.diioffc.web.id/api/tools/remini?url=${encodeURIComponent(imageUrl)}`;
+                let enhanceUrl = `https://apii.baguss.web.id/tools/remini?apikey=bagus&url=${encodeURIComponent(imageUrl)}`;
                 let enhanceRes = await fetch(enhanceUrl);
                 
                 if (!enhanceRes.ok) throw new Error("Gagal memproses gambar!");
-                let enhanceData = await enhanceRes.json();
+                let enhanceBlob = await enhanceRes.blob();
 
-                if (!enhanceData || !enhanceData.result || !enhanceData.result.link) {
-                    throw new Error("Gagal mendapatkan hasil dari Remini!");
-                }
+                // Upload hasil ke cdn.acaw.my.id
+                const resultForm = new FormData();
+                resultForm.append("file", enhanceBlob, "enhanced.jpg");
 
-                let finalUrl = enhanceData.result.link;
+                let resultUpload = await fetch("https://cdn.acaw.my.id/upload", {
+                    method: "POST",
+                    body: resultForm
+                }).then(res => res.json());
+
+                if (!resultUpload.fileUrl) throw new Error("Gagal menyimpan hasil!");
+
+                let finalUrl = resultUpload.fileUrl;
 
                 statusText.innerText = "✅ Foto berhasil ditingkatkan!";
                 
