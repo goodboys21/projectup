@@ -18,12 +18,8 @@
         }
         .container {
             width: 90%;
-            max-width: 600px;
+            max-width: 400px;
             text-align: center;
-            padding: 20px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
         }
         .drop-zone {
             border: 2px dashed #6D28D9;
@@ -31,7 +27,6 @@
             border-radius: 12px;
             background: rgba(255, 255, 255, 0.05);
             transition: 0.3s ease-in-out;
-            cursor: pointer;
         }
         .drop-zone:hover {
             background: rgba(255, 255, 255, 0.1);
@@ -119,11 +114,9 @@
             formData.append("file", file);
 
             try {
-                // Upload file ke filezone-api
                 const uploadResponse = await fetch("https://filezone-api.caliph.dev/upload", {
                     method: "POST",
-                    body: formData,
-                    mode: "cors"
+                    body: formData
                 });
                 progressBar.style.width = "50%";
 
@@ -131,28 +124,32 @@
                 if (!uploadResult.status) throw new Error("Upload gagal");
 
                 const imageUrl = uploadResult.result.url_file;
-                const hdUrl = `https://api.diioffc.web.id/api/tools/remini?url=${encodeURIComponent(imageUrl)}`;
+                const hdUrl = `https://apii.baguss.web.id/tools/remini?apikey=bagus&url=${encodeURIComponent(imageUrl)}`;
 
-                // Proses HD-kan gambar
-                const hdRes = await fetch(hdUrl, { mode: "cors" });
-                if (!hdRes.ok) throw new Error("Gagal HD-kan gambar!");
-
-                const hdData = await hdRes.json();
-                if (!hdData.status) throw new Error("API mengembalikan error!");
-
-                const finalImageUrl = hdData.result.link;
+                enhancedImage.src = hdUrl;
+                resultDiv.classList.remove("hidden");
 
                 progressBar.style.width = "80%";
 
-                enhancedImage.src = finalImageUrl;
-                resultDiv.classList.remove("hidden");
+                const hdFile = await fetch(hdUrl);
+                const hdBlob = await hdFile.blob();
+                const hdFormData = new FormData();
+                hdFormData.append("file", hdBlob, "enhanced.jpg");
 
-                downloadBtn.href = finalImageUrl;
+                const finalUploadResponse = await fetch("https://filezone-api.caliph.dev/upload", {
+                    method: "POST",
+                    body: hdFormData
+                });
+
+                const finalUploadResult = await finalUploadResponse.json();
+                if (!finalUploadResult.status) throw new Error("Upload hasil HD gagal");
+
+                downloadBtn.href = finalUploadResult.result.url;
                 downloadBtn.setAttribute("download", "HD-Image.jpg");
 
                 setTimeout(() => {
                     const link = document.createElement("a");
-                    link.href = finalImageUrl;
+                    link.href = finalUploadResult.result.url;
                     link.setAttribute("download", "HD-Image.jpg");
                     document.body.appendChild(link);
                     link.click();
