@@ -3,198 +3,172 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BagusHD - AI Photo Enhancer</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <title>HD Enhancer | ProjectUp</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Background Video */
         body {
-            margin: 0;
-            overflow: hidden;
+            background: #1E1E2E;
+            color: white;
+            height: 100vh;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            min-height: 100vh;
-            background: black;
+            font-family: 'Arial', sans-serif;
         }
-
-        video {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            min-width: 100%;
-            min-height: 100%;
-            z-index: -1;
-        }
-
-        /* Card Upload */
-        .card {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+        .container {
             width: 90%;
-            max-width: 400px;
+            max-width: 600px; /* Lebar dibatasi max 600px */
             text-align: center;
-            color: white;
-            animation: fadeIn 1s ease-in-out;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
         }
-
-        @keyframes fadeIn {
-            from {opacity: 0; transform: translateY(-10px);}
-            to {opacity: 1; transform: translateY(0);}
+        .drop-zone {
+            border: 2px dashed #6D28D9;
+            padding: 30px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            transition: 0.3s ease-in-out;
         }
-
-        /* Button Style */
-        .btn {
-            background: linear-gradient(135deg, #6a11cb, #2575fc);
-            padding: 12px;
-            color: white;
-            border-radius: 8px;
+        .drop-zone:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        .btn-modern {
+            background: #6D28D9;
+            padding: 14px;
+            border-radius: 10px;
             font-weight: bold;
-            transition: 0.3s;
             width: 100%;
-            display: block;
-            text-align: center;
-            cursor: pointer;
-        }
-
-        .btn:hover {
-            box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
-        }
-
-        /* Logo "BagusHD" */
-        .logo {
-            position: absolute;
-            top: 15px;
-            left: 20px;
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: white;
-            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
-        }
-
-        /* Progress Bar */
-        .progress-bar {
-            width: 100%;
-            background: rgba(255, 255, 255, 0.2);
-            height: 4px;
-            border-radius: 5px;
-            overflow: hidden;
             margin-top: 10px;
+            transition: all 0.3s ease-in-out;
         }
-
-        .progress-fill {
-            height: 100%;
-            width: 0%;
-            background: #6a11cb;
-            transition: width 0.5s ease-in-out;
+        .btn-modern:hover {
+            background: #4C1D95;
+            transform: scale(1.05);
         }
-
-        /* Hidden */
-        .hidden {
-            display: none;
-        }
+        .hidden { display: none; }
     </style>
 </head>
 <body>
 
-    <!-- Background Video -->
-    <video autoplay loop muted playsinline>
-        <source src="https://files.catbox.moe/4u8827.mp4" type="video/mp4">
-        Browser tidak mendukung video.
-    </video>
+    <div class="container">
+        <h1 class="text-2xl font-bold mb-4">🔍 HD-kan Foto Kamu</h1>
 
-    <div class="logo">BagusHD</div>
-
-    <div class="card">
-        <h1 class="text-2xl font-bold mb-4">✨ AI Photo Enhancer</h1>
-        <input type="file" id="fileInput" accept="image/*" class="mb-4 p-2 w-full text-black bg-white rounded">
-        <button id="uploadBtn" class="btn mb-4">🚀 Upload & Enhance</button>
-        <p id="status" class="text-sm text-green-300"></p>
-        
-        <div class="progress-bar hidden">
-            <div id="progressFill" class="progress-fill"></div>
+        <div class="drop-zone" id="dropZone">
+            <p>Drag & Drop atau Klik untuk Pilih Gambar</p>
+            <input type="file" id="fileInput" class="hidden" accept="image/*">
         </div>
 
-        <a id="downloadLink" class="btn hidden" download>⬇ Download Enhanced Photo</a>
+        <button onclick="uploadFile()" id="uploadBtn" class="btn-modern">
+            🚀 Proses Sekarang
+        </button>
+
+        <div id="progress" class="hidden mt-4">
+            <p class="text-sm text-gray-300">Mengunggah...</p>
+            <div class="w-full bg-gray-600 rounded-full h-2 mt-1">
+                <div id="progressBar" class="h-2 bg-purple-500 rounded-full transition-all"></div>
+            </div>
+        </div>
+
+        <div id="result" class="hidden mt-6">
+            <h2 class="text-lg font-semibold">Hasil HD:</h2>
+            <img id="enhancedImage" class="mt-4 rounded-lg shadow-md border border-gray-300 w-full">
+            <a id="downloadBtn" href="#" class="btn-modern block mt-4">📥 Download Gambar</a>
+        </div>
     </div>
 
     <script>
-        document.getElementById("uploadBtn").addEventListener("click", async () => {
-            const fileInput = document.getElementById("fileInput").files[0];
-            const statusText = document.getElementById("status");
-            const downloadBtn = document.getElementById("downloadLink");
-            const progressBar = document.querySelector(".progress-bar");
-            const progressFill = document.getElementById("progressFill");
+        const dropZone = document.getElementById("dropZone");
+        const fileInput = document.getElementById("fileInput");
 
-            if (!fileInput) {
-                statusText.innerText = "⚠ Pilih gambar dulu bro!";
-                statusText.classList.remove("text-green-300");
-                statusText.classList.add("text-red-400");
+        dropZone.addEventListener("click", () => fileInput.click());
+        dropZone.addEventListener("dragover", (e) => {
+            e.preventDefault();
+            dropZone.style.background = "rgba(255, 255, 255, 0.2)";
+        });
+        dropZone.addEventListener("dragleave", () => dropZone.style.background = "rgba(255, 255, 255, 0.05)");
+        dropZone.addEventListener("drop", (e) => {
+            e.preventDefault();
+            dropZone.style.background = "rgba(255, 255, 255, 0.05)";
+            fileInput.files = e.dataTransfer.files;
+        });
+
+        async function uploadFile() {
+            const uploadBtn = document.getElementById('uploadBtn');
+            const progress = document.getElementById('progress');
+            const progressBar = document.getElementById('progressBar');
+            const resultDiv = document.getElementById("result");
+            const enhancedImage = document.getElementById("enhancedImage");
+            const downloadBtn = document.getElementById("downloadBtn");
+
+            if (!fileInput.files.length) {
+                alert("Pilih gambar terlebih dahulu!");
                 return;
             }
 
-            downloadBtn.classList.add("hidden");
-            statusText.innerText = "🔄 Mengupload gambar...";
-            statusText.classList.remove("text-red-400");
-            statusText.classList.add("text-green-300");
-            progressBar.classList.remove("hidden");
-            progressFill.style.width = "10%";
+            uploadBtn.innerText = "🔄 Sedang Diproses...";
+            uploadBtn.disabled = true;
+            progress.classList.remove("hidden");
+            progressBar.style.width = "20%";
+
+            const file = fileInput.files[0];
+            const formData = new FormData();
+            formData.append("file", file);
 
             try {
-                // Upload ke FileZone
-                let formData = new FormData();
-                formData.append("file", fileInput);
-
-                let uploadRes = await fetch("https://filezone-api.caliph.dev/upload", {
+                const uploadResponse = await fetch("https://filezone-api.caliph.dev/upload", {
                     method: "POST",
                     body: formData
-                }).then(res => res.json());
+                });
+                progressBar.style.width = "50%";
 
-                if (!uploadRes.status) throw "Gagal upload ke FileZone!";
-                let imageUrl = uploadRes.result.url_file;
+                const uploadResult = await uploadResponse.json();
+                if (!uploadResult.status) throw new Error("Upload gagal");
 
-                statusText.innerText = "✅ Foto berhasil diunggah! Sedang diproses...";
-                progressFill.style.width = "50%";
+                const imageUrl = uploadResult.result.url_file;
+                const hdUrl = `https://apii.baguss.web.id/tools/remini?apikey=bagus&url=${encodeURIComponent(imageUrl)}`;
 
-                // Proses Enhance di Remini API
-                let enhanceUrl = `https://apii.baguss.web.id/tools/remini?apikey=bagus&url=${encodeURIComponent(imageUrl)}`;
-                let enhanceRes = await fetch(enhanceUrl);
+                enhancedImage.src = hdUrl;
+                resultDiv.classList.remove("hidden");
 
-                if (!enhanceRes.ok) throw "Gagal memproses gambar!";
-                let enhanceBlob = await enhanceRes.blob();
+                progressBar.style.width = "80%";
 
-                progressFill.style.width = "80%";
+                const hdFile = await fetch(hdUrl);
+                const hdBlob = await hdFile.blob();
+                const hdFormData = new FormData();
+                hdFormData.append("file", hdBlob, "enhanced.jpg");
 
-                // Upload hasil ke FileZone lagi
-                let resultForm = new FormData();
-                resultForm.append("file", enhanceBlob, "enhanced.jpg");
-
-                let resultUpload = await fetch("https://filezone-api.caliph.dev/upload", {
+                const finalUploadResponse = await fetch("https://filezone-api.caliph.dev/upload", {
                     method: "POST",
-                    body: resultForm
-                }).then(res => res.json());
+                    body: hdFormData
+                });
 
-                if (!resultUpload.status) throw "Gagal menyimpan hasil!";
+                const finalUploadResult = await finalUploadResponse.json();
+                if (!finalUploadResult.status) throw new Error("Upload hasil HD gagal");
 
-                let finalUrl = resultUpload.result.url;
-                statusText.innerText = "✅ Foto berhasil ditingkatkan!";
-                
-                // Munculin tombol download pas udah selesai
-                downloadBtn.href = finalUrl;
-                downloadBtn.classList.remove("hidden");
+                downloadBtn.href = finalUploadResult.result.url;
+                downloadBtn.setAttribute("download", "HD-Image.jpg");
 
-                progressFill.style.width = "100%";
-                
+                setTimeout(() => {
+                    const link = document.createElement("a");
+                    link.href = finalUploadResult.result.url;
+                    link.setAttribute("download", "HD-Image.jpg");
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                }, 1000);
+
+                progressBar.style.width = "100%";
             } catch (error) {
-                statusText.innerText = `❌ ${error}`;
-                statusText.classList.remove("text-green-300");
-                statusText.classList.add("text-red-400");
-                progressBar.classList.add("hidden");
+                alert("Terjadi kesalahan: " + error.message);
+            } finally {
+                uploadBtn.innerText = "🚀 Proses Sekarang";
+                uploadBtn.disabled = false;
+                setTimeout(() => progress.classList.add("hidden"), 2000);
             }
-        });
+        }
     </script>
 
 </body>
