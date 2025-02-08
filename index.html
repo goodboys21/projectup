@@ -29,18 +29,20 @@
         }
 
         /* Efek ketik + hapus */
-        .typing-effect {
-            position: absolute;
-            top: 20px;
-            left: 30px;
-            font-size: 32px;
-            font-weight: bold;
-            color: cyan;
-            white-space: nowrap;
-            overflow: hidden;
-            border-right: 3px solid white;
-            animation: typing 3s steps(15, end) infinite, blink 0.6s infinite;
-        }
+        /* Biar tulisan "Bagus HD" tetap di pojok kiri atas */
+.typing-effect {
+    position: fixed;
+    top: 20px;
+    left: 30px;
+    font-size: 32px;
+    font-weight: bold;
+    color: cyan;
+    white-space: nowrap;
+    overflow: hidden;
+    border-right: 3px solid white;
+    animation: typing 3s steps(15, end) infinite, blink 0.6s infinite;
+    z-index: 1000; /* Supaya selalu di atas */
+}
 
         @keyframes typing {
             0% { width: 0 }
