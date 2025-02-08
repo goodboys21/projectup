@@ -11,55 +11,13 @@
     <div class="bg-white p-6 rounded-lg shadow-md w-full max-w-md">
         <h1 class="text-2xl font-bold text-center text-blue-600 mb-4">Uploader ProjectUp</h1>
 
-        <!-- Input File -->
-        <input type="file" id="fileInput" class="w-full p-2 border rounded mb-4" />
-
-        <!-- Tombol Upload -->
-        <button onclick="uploadFile()" class="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded transition">
-            Upload
-        </button>
-
-        <!-- Hasil Upload -->
-        <div id="result" class="mt-4 text-center text-gray-700 hidden">
-            <p class="text-sm">File berhasil diupload!</p>
-            <a id="fileLink" href="#" target="_blank" class="text-blue-500 font-semibold underline">Lihat File</a>
-        </div>
-
-        <!-- Error -->
-        <p id="errorMsg" class="text-red-500 text-center mt-2 hidden"></p>
+        <form action="/api/upload" method="post" enctype="multipart/form-data" class="text-center">
+            <input type="file" name="file" class="w-full p-2 border rounded mb-4" required>
+            <button type="submit" class="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded transition">
+                Upload
+            </button>
+        </form>
     </div>
-
-    <script>
-        async function uploadFile() {
-            const fileInput = document.getElementById("fileInput");
-            const file = fileInput.files[0];
-            if (!file) return alert("Pilih file dulu bro!");
-
-            const formData = new FormData();
-            formData.append("file", file);
-
-            try {
-                const response = await fetch("/api/upload", { // Proxy API di Vercel
-                    method: "POST",
-                    body: formData
-                });
-
-                const data = await response.json();
-                if (data.success) {
-                    document.getElementById("fileLink").href = data.url;
-                    document.getElementById("fileLink").innerText = data.url;
-                    document.getElementById("result").classList.remove("hidden");
-                    document.getElementById("errorMsg").classList.add("hidden");
-                } else {
-                    document.getElementById("errorMsg").innerText = "Upload gagal bro, cek server!";
-                    document.getElementById("errorMsg").classList.remove("hidden");
-                }
-            } catch (error) {
-                document.getElementById("errorMsg").innerText = "Kesalahan saat upload: " + error.message;
-                document.getElementById("errorMsg").classList.remove("hidden");
-            }
-        }
-    </script>
 
 </body>
 </html>
