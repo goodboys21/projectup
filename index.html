@@ -105,24 +105,29 @@
             const statusText = document.getElementById("status");
             const downloadBtn = document.getElementById("downloadLink");
 
-            if (!fileInput) return alert("Pilih gambar dulu bro!");
+            if (!fileInput) {
+                statusText.innerText = "⚠ Pilih gambar dulu bro!";
+                statusText.classList.remove("text-green-300");
+                statusText.classList.add("text-red-400");
+                return;
+            }
 
-            // Sembunyikan tombol download sebelum proses selesai
             downloadBtn.classList.add("hidden");
-
-            const formData = new FormData();
-            formData.append("file", fileInput);
-
             statusText.innerText = "🔄 Mengupload gambar...";
-            
+            statusText.classList.remove("text-red-400");
+            statusText.classList.add("text-green-300");
+
             try {
                 // Upload ke FileZone
+                let formData = new FormData();
+                formData.append("file", fileInput);
+
                 let uploadRes = await fetch("https://filezone-api.caliph.dev/upload", {
                     method: "POST",
                     body: formData
                 }).then(res => res.json());
 
-                if (!uploadRes.status) throw new Error("Gagal upload ke FileZone!");
+                if (!uploadRes.status) throw "Gagal upload ke FileZone!";
                 let imageUrl = uploadRes.result.url_file;
 
                 statusText.innerText = "✅ Foto berhasil diunggah! Sedang diproses...";
@@ -130,12 +135,12 @@
                 // Proses Enhance di Remini API
                 let enhanceUrl = `https://apii.baguss.web.id/tools/remini?apikey=bagus&url=${encodeURIComponent(imageUrl)}`;
                 let enhanceRes = await fetch(enhanceUrl);
-                
-                if (!enhanceRes.ok) throw new Error("Gagal memproses gambar!");
+
+                if (!enhanceRes.ok) throw "Gagal memproses gambar!";
                 let enhanceBlob = await enhanceRes.blob();
 
                 // Upload hasil ke FileZone lagi
-                const resultForm = new FormData();
+                let resultForm = new FormData();
                 resultForm.append("file", enhanceBlob, "enhanced.jpg");
 
                 let resultUpload = await fetch("https://filezone-api.caliph.dev/upload", {
@@ -143,10 +148,9 @@
                     body: resultForm
                 }).then(res => res.json());
 
-                if (!resultUpload.status) throw new Error("Gagal menyimpan hasil!");
+                if (!resultUpload.status) throw "Gagal menyimpan hasil!";
 
                 let finalUrl = resultUpload.result.url;
-
                 statusText.innerText = "✅ Foto berhasil ditingkatkan!";
                 
                 // Munculin tombol download pas udah selesai
@@ -154,8 +158,9 @@
                 downloadBtn.classList.remove("hidden");
 
             } catch (error) {
-                statusText.innerText = "❌ Terjadi kesalahan, coba lagi!";
-                alert(error.message);
+                statusText.innerText = `❌ ${error}`;
+                statusText.classList.remove("text-green-300");
+                statusText.classList.add("text-red-400");
             }
         });
     </script>
