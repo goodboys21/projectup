@@ -11,8 +11,8 @@
             position: fixed;
             top: 0;
             left: 0;
-            width: 100vw;
-            height: 100vh;
+            width: 100%;
+            height: 100%;
             object-fit: cover;
             z-index: -1;
         }
@@ -25,9 +25,8 @@
             align-items: center;
             justify-content: center;
             font-family: 'Arial', sans-serif;
-            margin: 0;
-            overflow: hidden;
             position: relative;
+            overflow: hidden;
         }
 
         /* Kotak utama dengan blur */
@@ -36,8 +35,8 @@
             max-width: 600px;
             text-align: center;
             padding: 20px;
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(15px);
+            background: rgba(255, 255, 255, 0.2); /* Putih transparan */
+            backdrop-filter: blur(10px); /* Blur beneran */
             border-radius: 12px;
             box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
         }
@@ -47,12 +46,12 @@
             border: 2px dashed rgba(255, 255, 255, 0.7);
             padding: 30px;
             border-radius: 12px;
-            background: rgba(255, 255, 255, 0.15);
+            background: rgba(255, 255, 255, 0.2);
             transition: 0.3s ease-in-out;
         }
 
         .drop-zone:hover {
-            background: rgba(255, 255, 255, 0.25);
+            background: rgba(255, 255, 255, 0.3);
         }
 
         /* Tombol */
@@ -70,15 +69,13 @@
             background: #4C1D95;
             transform: scale(1.05);
         }
-
-        .hidden { display: none; }
     </style>
 </head>
 <body>
 
     <!-- Video Background -->
     <video class="video-bg" autoplay loop muted playsinline>
-        <source src="https://files.catbox.moe/4u8827.mp4" type="video/mp4">
+        <source src="/background.mp4" type="video/mp4">
         Browser kamu tidak mendukung video HTML5.
     </video>
 
@@ -116,12 +113,12 @@
         dropZone.addEventListener("click", () => fileInput.click());
         dropZone.addEventListener("dragover", (e) => {
             e.preventDefault();
-            dropZone.style.background = "rgba(255, 255, 255, 0.2)";
+            dropZone.style.background = "rgba(255, 255, 255, 0.3)";
         });
-        dropZone.addEventListener("dragleave", () => dropZone.style.background = "rgba(255, 255, 255, 0.15)");
+        dropZone.addEventListener("dragleave", () => dropZone.style.background = "rgba(255, 255, 255, 0.2)");
         dropZone.addEventListener("drop", (e) => {
             e.preventDefault();
-            dropZone.style.background = "rgba(255, 255, 255, 0.15)";
+            dropZone.style.background = "rgba(255, 255, 255, 0.2)";
             fileInput.files = e.dataTransfer.files;
         });
 
