@@ -6,7 +6,6 @@
     <title>BagusHD - AI Photo Enhancer</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <style>
-        /* Background Video */
         body {
             margin: 0;
             overflow: hidden;
@@ -16,7 +15,6 @@
             min-height: 100vh;
             background: black;
         }
-
         video {
             position: fixed;
             top: 50%;
@@ -26,8 +24,6 @@
             min-height: 100%;
             z-index: -1;
         }
-
-        /* Card Upload */
         .card {
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
@@ -40,13 +36,10 @@
             color: white;
             animation: fadeIn 1s ease-in-out;
         }
-
         @keyframes fadeIn {
             from {opacity: 0; transform: translateY(-10px);}
             to {opacity: 1; transform: translateY(0);}
         }
-
-        /* Button Style */
         .btn {
             background: linear-gradient(135deg, #6a11cb, #2575fc);
             padding: 12px;
@@ -59,12 +52,9 @@
             text-align: center;
             cursor: pointer;
         }
-
         .btn:hover {
             box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
         }
-
-        /* Logo "BagusHD" */
         .logo {
             position: absolute;
             top: 15px;
@@ -74,8 +64,6 @@
             color: white;
             text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
         }
-
-        /* Hidden */
         .hidden {
             display: none;
         }
@@ -83,82 +71,81 @@
 </head>
 <body>
 
-    <!-- Background Video -->
-    <video autoplay loop muted playsinline>
-        <source src="https://files.catbox.moe/4u8827.mp4" type="video/mp4">
-        Browser tidak mendukung video.
-    </video>
+<video autoplay loop muted playsinline>
+    <source src="https://files.catbox.moe/4u8827.mp4" type="video/mp4">
+    Browser tidak mendukung video.
+</video>
 
-    <div class="logo">BagusHD</div>
+<div class="logo">BagusHD</div>
 
-    <div class="card">
-        <h1 class="text-2xl font-bold mb-4">✨ AI Photo Enhancer</h1>
-        <input type="file" id="fileInput" accept="image/*" class="mb-4 p-2 w-full text-black bg-white rounded">
-        <button id="uploadBtn" class="btn mb-4">🚀 Upload & Enhance</button>
-        <p id="status" class="text-sm text-green-300"></p>
-        <a id="downloadLink" class="btn hidden" download>⬇ Download Enhanced Photo</a>
-    </div>
+<div class="card">
+    <h1 class="text-2xl font-bold mb-4">✨ AI Photo Enhancer</h1>
+    <input type="file" id="fileInput" accept="image/*" class="mb-4 p-2 w-full text-black bg-white rounded">
+    <button id="uploadBtn" class="btn mb-4">🚀 Upload & Enhance</button>
+    <p id="status" class="text-sm text-green-300"></p>
+    <a id="downloadLink" class="btn hidden" download>⬇ Download Enhanced Photo</a>
+</div>
 
-    <script>
-        document.getElementById("uploadBtn").addEventListener("click", async () => {
-            const fileInput = document.getElementById("fileInput").files[0];
-            const statusText = document.getElementById("status");
-            const downloadBtn = document.getElementById("downloadLink");
+<script>
+document.getElementById("uploadBtn").addEventListener("click", async () => {
+    const fileInput = document.getElementById("fileInput").files[0];
+    const statusText = document.getElementById("status");
+    const downloadBtn = document.getElementById("downloadLink");
 
-            if (!fileInput) return alert("Pilih gambar dulu bro!");
+    if (!fileInput) return alert("Pilih gambar dulu bro!");
 
-            // Sembunyikan tombol download sebelum proses selesai
-            downloadBtn.classList.add("hidden");
+    downloadBtn.classList.add("hidden");
+    statusText.innerText = "🔄 Mengupload gambar...";
 
-            const formData = new FormData();
-            formData.append("file", fileInput);
+    try {
+        // Upload ke FileZone
+        let formData = new FormData();
+        formData.append("file", fileInput);
 
-            statusText.innerText = "🔄 Mengupload gambar...";
+        let uploadRes = await fetch("https://filezone-api.caliph.dev/upload", {
+            method: "POST",
+            body: formData,
+        }).then(res => res.json());
 
-            try {
-                // Upload ke cdn.acaw.my.id
-                let uploadRes = await fetch("https://cdn.acaw.my.id/upload", {
-                    method: "POST",
-                    body: formData
-                }).then(res => res.json());
+        if (!uploadRes.status || !uploadRes.result.url_file) throw new Error("Gagal upload!");
+        let imageUrl = uploadRes.result.url_file;
 
-                if (!uploadRes.fileUrl) throw new Error("Gagal upload ke server!");
-                let imageUrl = uploadRes.fileUrl;
+        statusText.innerText = "✅ Meng-enhance gambar...";
+        
+        // Proses Enhance di Remini API
+        let enhanceUrl = `https://apii.baguss.web.id/tools/remini?apikey=bagus&url=${encodeURIComponent(imageUrl)}`;
+        let enhanceRes = await fetch(enhanceUrl).then(res => res.json());
 
-                statusText.innerText = "✅ Foto berhasil diunggah! Sedang diproses...";
+        if (!enhanceRes.status || !enhanceRes.result.url) throw new Error("Gagal memproses gambar!");
+        let enhancedUrl = enhanceRes.result.url;
 
-                // Proses Enhance di Remini API
-                let enhanceUrl = `https://apii.baguss.web.id/tools/remini?apikey=bagus&url=${encodeURIComponent(imageUrl)}`;
-                let enhanceRes = await fetch(enhanceUrl);
-                
-                if (!enhanceRes.ok) throw new Error("Gagal memproses gambar!");
-                let enhanceBlob = await enhanceRes.blob();
+        statusText.innerText = "🔄 Menyimpan hasil...";
+        
+        // Download hasil dari API lalu re-upload ke FileZone
+        let enhancedBlob = await fetch(enhancedUrl).then(res => res.blob());
 
-                // Upload hasil ke cdn.acaw.my.id
-                const resultForm = new FormData();
-                resultForm.append("file", enhanceBlob, "enhanced.jpg");
+        const resultForm = new FormData();
+        resultForm.append("file", enhancedBlob, "enhanced.jpg");
 
-                let resultUpload = await fetch("https://cdn.acaw.my.id/upload", {
-                    method: "POST",
-                    body: resultForm
-                }).then(res => res.json());
+        let resultUpload = await fetch("https://filezone-api.caliph.dev/upload", {
+            method: "POST",
+            body: resultForm,
+        }).then(res => res.json());
 
-                if (!resultUpload.fileUrl) throw new Error("Gagal menyimpan hasil!");
+        if (!resultUpload.status || !resultUpload.result.url_file) throw new Error("Gagal menyimpan hasil!");
 
-                let finalUrl = resultUpload.fileUrl;
+        let finalUrl = resultUpload.result.url_file;
 
-                statusText.innerText = "✅ Foto berhasil ditingkatkan!";
-                
-                // Munculin tombol download pas udah selesai
-                downloadBtn.href = finalUrl;
-                downloadBtn.classList.remove("hidden");
+        statusText.innerText = "✅ Foto berhasil ditingkatkan!";
+        downloadBtn.href = finalUrl;
+        downloadBtn.classList.remove("hidden");
 
-            } catch (error) {
-                statusText.innerText = "❌ Terjadi kesalahan, coba lagi!";
-                alert(error.message);
-            }
-        });
-    </script>
+    } catch (error) {
+        statusText.innerText = "❌ Terjadi kesalahan, coba lagi!";
+        alert(error.message);
+    }
+});
+</script>
 
 </body>
 </html>
