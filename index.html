@@ -27,7 +27,6 @@
             z-index: -1;
         }
 
-        /* Card Upload */
         .card {
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
@@ -38,15 +37,8 @@
             max-width: 400px;
             text-align: center;
             color: white;
-            animation: fadeIn 1s ease-in-out;
         }
 
-        @keyframes fadeIn {
-            from {opacity: 0; transform: translateY(-10px);}
-            to {opacity: 1; transform: translateY(0);}
-        }
-
-        /* Button Style */
         .btn {
             background: linear-gradient(135deg, #6a11cb, #2575fc);
             padding: 12px;
@@ -64,18 +56,6 @@
             box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
         }
 
-        /* Logo "BagusHD" */
-        .logo {
-            position: absolute;
-            top: 15px;
-            left: 20px;
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: white;
-            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
-        }
-
-        /* Hidden */
         .hidden {
             display: none;
         }
@@ -83,13 +63,9 @@
 </head>
 <body>
 
-    <!-- Background Video -->
     <video autoplay loop muted playsinline>
         <source src="https://files.catbox.moe/4u8827.mp4" type="video/mp4">
-        Browser tidak mendukung video.
     </video>
-
-    <div class="logo">BagusHD</div>
 
     <div class="card">
         <h1 class="text-2xl font-bold mb-4">✨ AI Photo Enhancer</h1>
@@ -106,8 +82,6 @@
             const downloadBtn = document.getElementById("downloadLink");
 
             if (!fileInput) return alert("Pilih gambar dulu bro!");
-
-            // Sembunyikan tombol download sebelum proses selesai
             downloadBtn.classList.add("hidden");
 
             const formData = new FormData();
@@ -116,25 +90,22 @@
             statusText.innerText = "🔄 Mengupload gambar...";
             
             try {
-                // Upload ke FileZone
                 let uploadRes = await fetch("https://filezone-api.caliph.dev/upload", {
                     method: "POST",
                     body: formData
                 }).then(res => res.json());
 
-                if (!uploadRes.status) throw new Error("Gagal upload ke FileZone!");
-                let imageUrl = uploadRes.result.url_file;
+                if (!uploadRes.status) throw new Error("Gagal upload!");
+                let imageUrl = uploadRes.result.url;
 
                 statusText.innerText = "✅ Foto berhasil diunggah! Sedang diproses...";
 
-                // Proses Enhance di Remini API
                 let enhanceUrl = `https://apii.baguss.web.id/tools/remini?apikey=bagus&url=${encodeURIComponent(imageUrl)}`;
-                let enhanceRes = await fetch(enhanceUrl);
-                
+                let enhanceRes = await fetch(enhanceUrl, { mode: "cors" });
+
                 if (!enhanceRes.ok) throw new Error("Gagal memproses gambar!");
                 let enhanceBlob = await enhanceRes.blob();
 
-                // Upload hasil ke FileZone lagi
                 const resultForm = new FormData();
                 resultForm.append("file", enhanceBlob, "enhanced.jpg");
 
@@ -146,10 +117,8 @@
                 if (!resultUpload.status) throw new Error("Gagal menyimpan hasil!");
 
                 let finalUrl = resultUpload.result.url;
-
                 statusText.innerText = "✅ Foto berhasil ditingkatkan!";
                 
-                // Munculin tombol download pas udah selesai
                 downloadBtn.href = finalUrl;
                 downloadBtn.classList.remove("hidden");
 
