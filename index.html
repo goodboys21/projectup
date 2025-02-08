@@ -75,6 +75,23 @@
             text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
         }
 
+        /* Progress Bar */
+        .progress-bar {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.2);
+            height: 4px;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: #6a11cb;
+            transition: width 0.5s ease-in-out;
+        }
+
         /* Hidden */
         .hidden {
             display: none;
@@ -96,6 +113,11 @@
         <input type="file" id="fileInput" accept="image/*" class="mb-4 p-2 w-full text-black bg-white rounded">
         <button id="uploadBtn" class="btn mb-4">🚀 Upload & Enhance</button>
         <p id="status" class="text-sm text-green-300"></p>
+        
+        <div class="progress-bar hidden">
+            <div id="progressFill" class="progress-fill"></div>
+        </div>
+
         <a id="downloadLink" class="btn hidden" download>⬇ Download Enhanced Photo</a>
     </div>
 
@@ -104,6 +126,8 @@
             const fileInput = document.getElementById("fileInput").files[0];
             const statusText = document.getElementById("status");
             const downloadBtn = document.getElementById("downloadLink");
+            const progressBar = document.querySelector(".progress-bar");
+            const progressFill = document.getElementById("progressFill");
 
             if (!fileInput) {
                 statusText.innerText = "⚠ Pilih gambar dulu bro!";
@@ -116,6 +140,8 @@
             statusText.innerText = "🔄 Mengupload gambar...";
             statusText.classList.remove("text-red-400");
             statusText.classList.add("text-green-300");
+            progressBar.classList.remove("hidden");
+            progressFill.style.width = "10%";
 
             try {
                 // Upload ke FileZone
@@ -131,6 +157,7 @@
                 let imageUrl = uploadRes.result.url_file;
 
                 statusText.innerText = "✅ Foto berhasil diunggah! Sedang diproses...";
+                progressFill.style.width = "50%";
 
                 // Proses Enhance di Remini API
                 let enhanceUrl = `https://apii.baguss.web.id/tools/remini?apikey=bagus&url=${encodeURIComponent(imageUrl)}`;
@@ -138,6 +165,8 @@
 
                 if (!enhanceRes.ok) throw "Gagal memproses gambar!";
                 let enhanceBlob = await enhanceRes.blob();
+
+                progressFill.style.width = "80%";
 
                 // Upload hasil ke FileZone lagi
                 let resultForm = new FormData();
@@ -157,10 +186,13 @@
                 downloadBtn.href = finalUrl;
                 downloadBtn.classList.remove("hidden");
 
+                progressFill.style.width = "100%";
+                
             } catch (error) {
                 statusText.innerText = `❌ ${error}`;
                 statusText.classList.remove("text-green-300");
                 statusText.classList.add("text-red-400");
+                progressBar.classList.add("hidden");
             }
         });
     </script>
