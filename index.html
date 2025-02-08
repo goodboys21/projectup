@@ -90,22 +90,25 @@
             statusText.innerText = "🔄 Mengupload gambar...";
             
             try {
+                // Upload ke CDN
                 let uploadRes = await fetch("https://filezone-api.caliph.dev/upload", {
                     method: "POST",
                     body: formData
                 }).then(res => res.json());
 
                 if (!uploadRes.status) throw new Error("Gagal upload!");
-                let imageUrl = uploadRes.result.url;
+                let imageUrl = uploadRes.result.url_file;
 
                 statusText.innerText = "✅ Foto berhasil diunggah! Sedang diproses...";
 
+                // Proses HD-kan di API Bagus
                 let enhanceUrl = `https://apii.baguss.web.id/tools/remini?apikey=bagus&url=${encodeURIComponent(imageUrl)}`;
-                let enhanceRes = await fetch(enhanceUrl, { mode: "cors" });
 
+                let enhanceRes = await fetch(enhanceUrl);
                 if (!enhanceRes.ok) throw new Error("Gagal memproses gambar!");
                 let enhanceBlob = await enhanceRes.blob();
 
+                // Upload hasil HD ke CDN lagi
                 const resultForm = new FormData();
                 resultForm.append("file", enhanceBlob, "enhanced.jpg");
 
