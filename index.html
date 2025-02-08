@@ -7,25 +7,20 @@
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
 <body class="bg-gray-100 flex flex-col items-center justify-center min-h-screen p-6">
-
     <div class="bg-white p-6 rounded-lg shadow-md w-full max-w-md">
         <h1 class="text-2xl font-bold text-center text-blue-600 mb-4">Uploader Proxy</h1>
         
-        <!-- Input File -->
         <input type="file" id="fileInput" class="w-full p-2 border rounded mb-4" />
 
-        <!-- Tombol Upload -->
         <button onclick="uploadFile()" class="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded transition">
             Upload
         </button>
 
-        <!-- Hasil Upload -->
         <div id="result" class="mt-4 text-center text-gray-700 hidden">
             <p class="text-sm">File berhasil diupload!</p>
             <a id="fileLink" href="#" target="_blank" class="text-blue-500 font-semibold underline">Lihat File</a>
         </div>
 
-        <!-- Error -->
         <p id="errorMsg" class="text-red-500 text-center mt-2 hidden"></p>
     </div>
 
@@ -33,56 +28,33 @@
         async function uploadFile() {
             const fileInput = document.getElementById("fileInput");
             const file = fileInput.files[0];
+
             if (!file) return alert("Pilih file dulu bro!");
 
             const formData = new FormData();
             formData.append("file", file);
 
             try {
-                const uploadResponse = await fetch("https://cdn.acaw.my.id/upload", {
+                const response = await fetch("https://files.exonity.xyz/upload", {
                     method: "POST",
                     body: formData
                 });
 
-                const uploadData = await uploadResponse.json();
+                const data = await response.json();
 
-                if (!uploadData.fileDetails || !uploadData.fileDetails.fileName) {
-                    throw new Error("Upload gagal, cek server!");
+                if (data.fileUrl) {
+                    document.getElementById("fileLink").href = data.fileUrl;
+                    document.getElementById("fileLink").innerText = data.fileUrl;
+                    document.getElementById("result").classList.remove("hidden");
+                    document.getElementById("errorMsg").classList.add("hidden");
+                } else {
+                    document.getElementById("errorMsg").innerText = "Upload gagal bro, cek server!";
+                    document.getElementById("errorMsg").classList.remove("hidden");
                 }
-
-                const fileName = uploadData.fileDetails.fileName;
-                const proxyUrl = `${window.location.origin}/file/${fileName}`;
-
-                document.getElementById("fileLink").href = proxyUrl;
-                document.getElementById("fileLink").innerText = proxyUrl;
-                document.getElementById("result").classList.remove("hidden");
-                document.getElementById("errorMsg").classList.add("hidden");
             } catch (error) {
                 document.getElementById("errorMsg").innerText = "Kesalahan saat upload: " + error.message;
                 document.getElementById("errorMsg").classList.remove("hidden");
             }
-        }
-
-        // Proxy Handler
-        addEventListener("fetch", event => {
-            const url = new URL(event.request.url);
-            if (url.pathname.startsWith("/file/")) {
-                event.respondWith(proxyFile(url.pathname.split("/").pop()));
-            }
-        });
-
-        async function proxyFile(fileName) {
-            const fileUrl = `http://cdn.acaw.my.id/file/${fileName}`;
-            const response = await fetch(fileUrl);
-            if (!response.ok) {
-                return new Response("File not found", { status: 404 });
-            }
-            return new Response(response.body, {
-                headers: {
-                    "Content-Type": response.headers.get("Content-Type"),
-                    "Content-Length": response.headers.get("Content-Length")
-                }
-            });
         }
     </script>
 
