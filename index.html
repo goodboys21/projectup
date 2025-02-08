@@ -6,57 +6,38 @@
     <title>HD Enhancer | ProjectUp</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Video Background */
-        .video-bg {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            z-index: -1;
-        }
-
-        /* Styling body */
         body {
+            background: #1B1B1F;
             color: white;
             height: 100vh;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
             font-family: 'Arial', sans-serif;
-            position: relative;
-            overflow: hidden;
         }
-
-        /* Kotak utama dengan blur */
         .container {
             width: 90%;
             max-width: 600px;
             text-align: center;
             padding: 20px;
-            background: rgba(255, 255, 255, 0.2); /* Putih transparan */
-            backdrop-filter: blur(10px); /* Blur beneran */
+            background: #2A2D3E;
             border-radius: 12px;
             box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
         }
-
-        /* Drop-zone */
         .drop-zone {
-            border: 2px dashed rgba(255, 255, 255, 0.7);
+            border: 2px dashed #00AFFF;
             padding: 30px;
             border-radius: 12px;
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.05);
             transition: 0.3s ease-in-out;
         }
-
         .drop-zone:hover {
-            background: rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.1);
+            border-color: #007BFF;
         }
-
-        /* Tombol */
         .btn-modern {
-            background: #6D28D9;
+            background: #007BFF;
             padding: 14px;
             border-radius: 10px;
             font-weight: bold;
@@ -64,22 +45,27 @@
             margin-top: 10px;
             transition: all 0.3s ease-in-out;
         }
-
         .btn-modern:hover {
-            background: #4C1D95;
+            background: #0056B3;
             transform: scale(1.05);
+        }
+        .hidden { display: none; }
+        .progress-bar-container {
+            width: 100%;
+            background: #555;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .progress-bar {
+            height: 6px;
+            width: 0;
+            background: linear-gradient(to right, #00AFFF, #007BFF);
+            transition: width 0.4s ease-in-out;
         }
     </style>
 </head>
 <body>
 
-    <!-- Video Background -->
-    <video class="video-bg" autoplay loop muted playsinline>
-        <source src="/background.mp4" type="video/mp4">
-        Browser kamu tidak mendukung video HTML5.
-    </video>
-
-    <!-- Konten -->
     <div class="container">
         <h1 class="text-2xl font-bold mb-4">🔍 HD-kan Foto Kamu</h1>
 
@@ -94,8 +80,8 @@
 
         <div id="progress" class="hidden mt-4">
             <p class="text-sm text-gray-300">Mengunggah...</p>
-            <div class="w-full bg-gray-600 rounded-full h-2 mt-1">
-                <div id="progressBar" class="h-2 bg-purple-500 rounded-full transition-all"></div>
+            <div class="progress-bar-container">
+                <div id="progressBar" class="progress-bar"></div>
             </div>
         </div>
 
@@ -113,12 +99,12 @@
         dropZone.addEventListener("click", () => fileInput.click());
         dropZone.addEventListener("dragover", (e) => {
             e.preventDefault();
-            dropZone.style.background = "rgba(255, 255, 255, 0.3)";
+            dropZone.style.background = "rgba(255, 255, 255, 0.2)";
         });
-        dropZone.addEventListener("dragleave", () => dropZone.style.background = "rgba(255, 255, 255, 0.2)");
+        dropZone.addEventListener("dragleave", () => dropZone.style.background = "rgba(255, 255, 255, 0.05)");
         dropZone.addEventListener("drop", (e) => {
             e.preventDefault();
-            dropZone.style.background = "rgba(255, 255, 255, 0.2)";
+            dropZone.style.background = "rgba(255, 255, 255, 0.05)";
             fileInput.files = e.dataTransfer.files;
         });
 
