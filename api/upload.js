@@ -11,14 +11,14 @@ export const config = {
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
-    return res.status(405).json({ success: false, message: "Method Not Allowed" });
+    return res.status(405).send("Method Not Allowed");
   }
 
   const form = new formidable.IncomingForm();
 
   form.parse(req, async (err, fields, files) => {
     if (err || !files.file) {
-      return res.status(400).json({ success: false, message: "File tidak ditemukan." });
+      return res.status(400).send("File tidak ditemukan.");
     }
 
     try {
@@ -33,18 +33,12 @@ export default async function handler(req, res) {
       const uploadedFile = response.data.result;
       const proxiedUrl = `https://projectup.vercel.app/api/file?fileName=${uploadedFile.originalname}`;
 
-      res.json({
-        success: true,
-        message: "File berhasil diunggah.",
-        url: proxiedUrl,
-      });
+      // Redirect langsung ke file yang udah diproxy ke domain lo
+      res.writeHead(302, { Location: proxiedUrl });
+      res.end();
 
     } catch (error) {
-      res.status(500).json({
-        success: false,
-        message: "Gagal mengunggah file.",
-        error: error.message,
-      });
+      res.status(500).send("Gagal mengunggah file.");
     }
   });
-}
+  }
