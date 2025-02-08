@@ -3,21 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Enhance Foto - ProjectUp</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <title>HD-kan Foto | ProjectUp</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100 flex flex-col items-center justify-center min-h-screen p-6">
-    <div class="bg-white p-6 rounded-lg shadow-md w-full max-w-md text-center">
-        <h1 class="text-2xl font-bold text-blue-600 mb-4">Enhance Foto - ProjectUp</h1>
-        <input type="file" id="fileInput" class="w-full p-2 border rounded mb-4" accept="image/*" required>
-        <button onclick="uploadFile()" class="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded transition">
-            Upload & HD-kan
+<body class="bg-gradient-to-br from-blue-600 to-purple-800 min-h-screen flex items-center justify-center">
+
+    <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-lg text-center">
+        <h1 class="text-3xl font-bold text-gray-800 mb-2">🔹 HD-kan Foto Kamu!</h1>
+        <p class="text-gray-500 mb-6">Tingkatkan kualitas foto dengan sekali klik</p>
+
+        <label class="cursor-pointer bg-blue-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-600 transition">
+            Pilih Gambar 📤
+            <input type="file" id="fileInput" class="hidden" accept="image/*">
+        </label>
+
+        <button onclick="uploadFile()" id="uploadBtn" class="mt-4 w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition">
+            Proses Sekarang 🚀
         </button>
-        <div id="loading" class="mt-4 text-gray-600 hidden">Memproses...</div>
-        <div id="result" class="mt-4 hidden">
-            <h2 class="text-lg font-semibold">Hasil:</h2>
+
+        <!-- Progress Bar -->
+        <div id="progress" class="hidden mt-4">
+            <div class="w-full bg-gray-200 rounded-full h-2">
+                <div id="progressBar" class="h-2 bg-green-500 rounded-full transition-all"></div>
+            </div>
+            <p id="progressText" class="text-gray-500 text-sm mt-1">Mengunggah...</p>
+        </div>
+
+        <!-- Hasil Gambar -->
+        <div id="result" class="hidden mt-6">
+            <h2 class="text-lg font-semibold text-gray-700">Hasil HD:</h2>
             <a id="downloadLink" href="#" target="_blank">
-                <img id="enhancedImage" class="mt-2 rounded shadow-md w-full">
+                <img id="enhancedImage" class="mt-4 rounded-lg shadow-md border border-gray-300 w-full">
+            </a>
+            <a id="downloadBtn" href="#" class="block mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition">
+                📥 Download Gambar
             </a>
         </div>
     </div>
@@ -25,16 +44,24 @@
     <script>
         async function uploadFile() {
             const fileInput = document.getElementById('fileInput');
+            const uploadBtn = document.getElementById('uploadBtn');
+            const progress = document.getElementById('progress');
+            const progressBar = document.getElementById('progressBar');
+            const progressText = document.getElementById('progressText');
+
             if (!fileInput.files.length) {
                 alert("Pilih gambar terlebih dahulu!");
                 return;
             }
 
+            uploadBtn.innerText = "🔄 Sedang Diproses...";
+            uploadBtn.disabled = true;
+            progress.classList.remove("hidden");
+            progressBar.style.width = "20%";
+
             const file = fileInput.files[0];
             const formData = new FormData();
             formData.append("file", file);
-
-            document.getElementById('loading').classList.remove("hidden");
 
             try {
                 // Upload ke filezone-api
@@ -42,25 +69,38 @@
                     method: "POST",
                     body: formData
                 });
-                const uploadResult = await uploadResponse.json();
+                progressBar.style.width = "50%";
+                progressText.innerText = "Mengunggah ke server...";
 
+                const uploadResult = await uploadResponse.json();
                 if (!uploadResult.status) throw new Error("Upload gagal");
 
                 const imageUrl = uploadResult.result.url_file;
 
                 // Proses di API Remini
                 const hdUrl = `https://apii.baguss.web.id/tools/remini?apikey=bagus&url=${encodeURIComponent(imageUrl)}`;
-                
+
+                progressBar.style.width = "80%";
+                progressText.innerText = "Memproses gambar...";
+                await new Promise(resolve => setTimeout(resolve, 2000)); // Simulasi delay
+
                 // Tampilkan hasil
                 document.getElementById("enhancedImage").src = hdUrl;
                 document.getElementById("downloadLink").href = hdUrl;
+                document.getElementById("downloadBtn").href = hdUrl;
                 document.getElementById("result").classList.remove("hidden");
+
+                progressBar.style.width = "100%";
+                progressText.innerText = "Selesai!";
             } catch (error) {
                 alert("Terjadi kesalahan: " + error.message);
             } finally {
-                document.getElementById('loading').classList.add("hidden");
+                uploadBtn.innerText = "Proses Sekarang 🚀";
+                uploadBtn.disabled = false;
+                setTimeout(() => progress.classList.add("hidden"), 2000);
             }
         }
     </script>
+
 </body>
-    </html>
+</html>
