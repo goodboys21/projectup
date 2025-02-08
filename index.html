@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Uploader FileZone</title>
+    <title>Uploader ProjectUp</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
 <body class="bg-gray-100 flex flex-col items-center justify-center min-h-screen p-6">
 
     <div class="bg-white p-6 rounded-lg shadow-md w-full max-w-md">
-        <h1 class="text-2xl font-bold text-center text-blue-600 mb-4">Uploader FileZone</h1>
+        <h1 class="text-2xl font-bold text-center text-blue-600 mb-4">Uploader ProjectUp</h1>
         
         <!-- Input File -->
         <input type="file" id="fileInput" class="w-full p-2 border rounded mb-4" />
@@ -48,8 +48,12 @@
                 const data = await response.json();
 
                 if (data.status && data.result.url_file) {
-                    document.getElementById("fileLink").href = data.result.url_file;
-                    document.getElementById("fileLink").innerText = data.result.url_file;
+                    const originalUrl = data.result.url_file;
+                    const fileName = originalUrl.split("/").pop(); // Ambil nama file
+                    const proxyUrl = `https://projectup.vercel.app/file/${fileName}`; // Proxy ke domain lo
+
+                    document.getElementById("fileLink").href = proxyUrl;
+                    document.getElementById("fileLink").innerText = proxyUrl;
                     document.getElementById("result").classList.remove("hidden");
                     document.getElementById("errorMsg").classList.add("hidden");
                 } else {
