@@ -6,24 +6,24 @@
     <title>BagusHD - AI Photo Enhancer</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <style>
-        /* Video Background */
+        /* Background Video */
         body {
-            min-height: 100vh;
+            margin: 0;
+            overflow: hidden;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
-            overflow: hidden;
-            position: relative;
+            min-height: 100vh;
+            background: black;
         }
 
         video {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            min-width: 100%;
+            min-height: 100%;
             z-index: -1;
         }
 
@@ -57,6 +57,7 @@
             width: 100%;
             display: block;
             text-align: center;
+            cursor: pointer;
         }
 
         .btn:hover {
@@ -73,20 +74,26 @@
             color: white;
             text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
         }
+
+        /* Hidden */
+        .hidden {
+            display: none;
+        }
     </style>
 </head>
 <body>
 
-    <!-- Video Background -->
-    <video autoplay muted loop>
+    <!-- Background Video -->
+    <video autoplay loop muted playsinline>
         <source src="https://files.catbox.moe/4u8827.mp4" type="video/mp4">
+        Browser tidak mendukung video.
     </video>
 
     <div class="logo">BagusHD</div>
 
     <div class="card">
         <h1 class="text-2xl font-bold mb-4">✨ AI Photo Enhancer</h1>
-        <input type="file" id="fileInput" class="mb-4 p-2 w-full text-black bg-white rounded">
+        <input type="file" id="fileInput" accept="image/*" class="mb-4 p-2 w-full text-black bg-white rounded">
         <button id="uploadBtn" class="btn mb-4">🚀 Upload & Enhance</button>
         <p id="status" class="text-sm text-green-300"></p>
         <a id="downloadLink" class="btn hidden" download>⬇ Download Enhanced Photo</a>
@@ -95,12 +102,18 @@
     <script>
         document.getElementById("uploadBtn").addEventListener("click", async () => {
             const fileInput = document.getElementById("fileInput").files[0];
+            const statusText = document.getElementById("status");
+            const downloadBtn = document.getElementById("downloadLink");
+
             if (!fileInput) return alert("Pilih gambar dulu bro!");
+
+            // Sembunyikan tombol download sebelum proses selesai
+            downloadBtn.classList.add("hidden");
 
             const formData = new FormData();
             formData.append("file", fileInput);
 
-            document.getElementById("status").innerText = "🔄 Mengupload gambar...";
+            statusText.innerText = "🔄 Mengupload gambar...";
             
             try {
                 // Upload ke FileZone
@@ -109,17 +122,16 @@
                     body: formData
                 }).then(res => res.json());
 
-                if (!uploadRes.status) {
-                    document.getElementById("status").innerText = "❌ Gagal mengupload!";
-                    return;
-                }
-
+                if (!uploadRes.status) throw new Error("Gagal upload ke FileZone!");
                 let imageUrl = uploadRes.result.url_file;
-                document.getElementById("status").innerText = "✅ Foto berhasil diunggah! Sedang diproses...";
+
+                statusText.innerText = "✅ Foto berhasil diunggah! Sedang diproses...";
 
                 // Proses Enhance di Remini API
                 let enhanceUrl = `https://apii.baguss.web.id/tools/remini?apikey=bagus&url=${encodeURIComponent(imageUrl)}`;
                 let enhanceRes = await fetch(enhanceUrl);
+                
+                if (!enhanceRes.ok) throw new Error("Gagal memproses gambar!");
                 let enhanceBlob = await enhanceRes.blob();
 
                 // Upload hasil ke FileZone lagi
@@ -131,20 +143,19 @@
                     body: resultForm
                 }).then(res => res.json());
 
-                if (!resultUpload.status) {
-                    document.getElementById("status").innerText = "❌ Gagal menyimpan hasil!";
-                    return;
-                }
+                if (!resultUpload.status) throw new Error("Gagal menyimpan hasil!");
 
-                let finalUrl = resultUpload.result.url_file;
+                let finalUrl = resultUpload.result.url;
 
-                document.getElementById("status").innerText = "✅ Foto berhasil ditingkatkan!";
-                let downloadLink = document.getElementById("downloadLink");
-                downloadLink.href = finalUrl;
-                downloadLink.classList.remove("hidden");
+                statusText.innerText = "✅ Foto berhasil ditingkatkan!";
+                
+                // Munculin tombol download pas udah selesai
+                downloadBtn.href = finalUrl;
+                downloadBtn.classList.remove("hidden");
 
             } catch (error) {
-                document.getElementById("status").innerText = "❌ Terjadi kesalahan, coba lagi!";
+                statusText.innerText = "❌ Terjadi kesalahan, coba lagi!";
+                alert(error.message);
             }
         });
     </script>
