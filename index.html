@@ -6,15 +6,21 @@
     <title>HD Enhancer | ProjectUp</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Styling untuk membuat video sebagai background */
-        .video-bg {
+        /* Styling video agar jadi background penuh */
+        .video-container {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            object-fit: cover;
+            overflow: hidden;
             z-index: -1;
+        }
+
+        .video-container video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
         /* Styling body */
@@ -30,16 +36,16 @@
             overflow: hidden;
         }
 
-        /* Kotak utama dengan efek blur dan transparan */
+        /* Kotak utama dengan efek blur transparan */
         .container {
             width: 90%;
             max-width: 600px;
             text-align: center;
             padding: 20px;
-            background: rgba(255, 255, 255, 0.2); /* Warna putih dengan transparansi */
-            backdrop-filter: blur(15px); /* Efek blur */
+            background: rgba(255, 255, 255, 0.15); /* Warna putih dengan transparansi */
+            backdrop-filter: blur(20px); /* Efek blur */
             border-radius: 12px;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
         }
 
         /* Drop-zone untuk upload gambar */
@@ -78,10 +84,12 @@
 <body>
 
     <!-- Video Background -->
-    <video class="video-bg" autoplay loop muted>
-        <source src="https://files.catbox.moe/4u8827.mp4" type="video/mp4">
-        Browser kamu tidak mendukung video HTML5.
-    </video>
+    <div class="video-container">
+        <video autoplay loop muted>
+            <source src="https://files.catbox.moe/4u8827.mp4" type="video/mp4">
+            Browser kamu tidak mendukung video HTML5.
+        </video>
+    </div>
 
     <div class="container">
         <h1 class="text-2xl font-bold mb-4">🔍 HD-kan Foto Kamu</h1>
