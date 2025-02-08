@@ -10,15 +10,17 @@
             background: linear-gradient(45deg, #1E3A8A, #3B82F6, #60A5FA, #93C5FD);
             background-size: 300% 300%;
             animation: gradientBG 6s ease infinite;
+            min-height: 100vh;
         }
         @keyframes gradientBG {
             0% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
         }
+        .hidden { display: none; }
     </style>
 </head>
-<body class="flex flex-col items-center justify-center min-h-screen text-white text-center px-4 relative">
+<body class="flex flex-col items-center justify-center text-white text-center px-4 relative">
 
     <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-lg text-center text-gray-800">
         <h1 class="text-3xl font-bold mb-2">🔹 HD-kan Foto Kamu!</h1>
@@ -28,6 +30,8 @@
             Pilih Gambar 📤
             <input type="file" id="fileInput" class="hidden" accept="image/*">
         </label>
+
+        <p id="notifUpload" class="hidden text-green-500 font-semibold mt-2">✅ Foto berhasil diunggah!</p>
 
         <button onclick="uploadFile()" id="uploadBtn" class="mt-4 w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition">
             Proses Sekarang 🚀
@@ -74,6 +78,7 @@
             const resultDiv = document.getElementById("result");
             const enhancedImage = document.getElementById("enhancedImage");
             const downloadBtn = document.getElementById("downloadBtn");
+            const notifUpload = document.getElementById("notifUpload");
 
             if (!fileInput.files.length) {
                 alert("Pilih gambar terlebih dahulu!");
@@ -102,6 +107,8 @@
                 if (!uploadResult.status) throw new Error("Upload gagal");
 
                 const imageUrl = uploadResult.result.url_file;
+                notifUpload.classList.remove("hidden"); // Tampilkan notifikasi sukses upload
+
                 const hdUrl = `https://apii.baguss.web.id/tools/remini?apikey=bagus&url=${encodeURIComponent(imageUrl)}`;
 
                 // Langsung tampilkan gambar hasil HD
@@ -128,6 +135,16 @@
                 // Update tombol download ke URL final
                 downloadBtn.href = finalUploadResult.result.url;
                 downloadBtn.setAttribute("download", "HD-Image.jpg");
+
+                // Auto-download setelah selesai
+                setTimeout(() => {
+                    const link = document.createElement("a");
+                    link.href = finalUploadResult.result.url;
+                    link.setAttribute("download", "HD-Image.jpg");
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                }, 1000);
 
                 progressBar.style.width = "100%";
                 progressText.innerText = "Selesai!";
