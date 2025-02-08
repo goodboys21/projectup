@@ -3,17 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BagusHD | Enhancer</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>BagusHD - AI Photo Enhancer</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600&display=swap');
-
+        /* Background luar angkasa */
         body {
-            font-family: 'Orbitron', sans-serif;
-            background: url('https://source.unsplash.com/1600x900/?galaxy,space,stars') no-repeat center center fixed;
-            background-size: cover;
-            color: white;
-            height: 100vh;
+            background: url('https://source.unsplash.com/1600x900/?galaxy,space,stars') no-repeat center center/cover;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -21,182 +17,125 @@
             overflow: hidden;
         }
 
+        /* Efek bintang */
+        .stars {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            background: url('https://i.imgur.com/VbGx9Hq.png') repeat;
+            animation: moveStars 50s linear infinite;
+        }
+
+        @keyframes moveStars {
+            from {background-position: 0 0;}
+            to {background-position: -10000px 5000px;}
+        }
+
+        /* Card Upload */
+        .card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            color: white;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {opacity: 0; transform: translateY(-10px);}
+            to {opacity: 1; transform: translateY(0);}
+        }
+
+        /* Button Style */
+        .btn {
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            padding: 12px;
+            color: white;
+            border-radius: 8px;
+            font-weight: bold;
+            transition: 0.3s;
+            width: 100%;
+            display: block;
+            text-align: center;
+        }
+
+        .btn:hover {
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+        }
+
+        /* Logo "BagusHD" */
         .logo {
             position: absolute;
-            top: 20px;
+            top: 15px;
             left: 20px;
-            font-size: 22px;
+            font-size: 1.5rem;
             font-weight: bold;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            color: #ff00ff;
-            text-shadow: 0px 0px 8px #ff00ff, 0px 0px 16px #ff00ff;
+            color: white;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
         }
-
-        .container {
-            width: 90%;
-            max-width: 600px;
-            text-align: center;
-            padding: 25px;
-            background: rgba(0, 0, 0, 0.7);
-            border-radius: 16px;
-            backdrop-filter: blur(5px);
-            box-shadow: 0px 8px 20px rgba(255, 0, 255, 0.3);
-        }
-
-        .drop-zone {
-            border: 2px dashed #fff;
-            padding: 40px;
-            border-radius: 16px;
-            background: rgba(255, 255, 255, 0.1);
-            transition: 0.3s ease-in-out;
-            cursor: pointer;
-        }
-
-        .drop-zone:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
-
-        .btn-modern {
-            background: linear-gradient(45deg, #ff00ff, #6a0dad);
-            padding: 14px;
-            border-radius: 12px;
-            font-weight: bold;
-            width: 100%;
-            transition: all 0.3s ease-in-out;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            box-shadow: 0 4px 10px rgba(255, 0, 255, 0.5);
-        }
-
-        .btn-modern:hover {
-            transform: scale(1.05);
-            background: linear-gradient(45deg, #e100ff, #8a2be2);
-        }
-
-        .hidden { display: none; }
     </style>
 </head>
 <body>
 
+    <div class="stars"></div>
     <div class="logo">BagusHD</div>
 
-    <div class="container">
-        <h1 class="text-2xl font-semibold mb-4">🚀 Tingkatkan Kualitas Foto!</h1>
-
-        <div class="drop-zone" id="dropZone">
-            <p class="text-lg">📤 Drag & Drop atau Klik untuk Pilih Gambar</p>
-            <input type="file" id="fileInput" class="hidden" accept="image/*">
-        </div>
-
-        <button onclick="uploadFile()" id="uploadBtn" class="btn-modern mt-4">
-            🌌 Proses Sekarang
-        </button>
-
-        <div id="progress" class="hidden mt-4">
-            <p class="text-sm text-gray-300">Mengunggah...</p>
-            <div class="w-full bg-gray-600 rounded-full h-2 mt-1">
-                <div id="progressBar" class="h-2 bg-purple-500 rounded-full transition-all"></div>
-            </div>
-        </div>
-
-        <div id="result" class="hidden mt-6">
-            <h2 class="text-lg font-semibold">Hasil HD:</h2>
-            <img id="enhancedImage" class="mt-4 rounded-lg shadow-md border border-gray-300 w-full">
-            <a id="downloadBtn" href="#" class="btn-modern block mt-4">📥 Download Gambar</a>
-        </div>
+    <div class="card">
+        <h1 class="text-2xl font-bold mb-4">✨ AI Photo Enhancer</h1>
+        <input type="file" id="fileInput" class="mb-4 p-2 w-full text-black bg-white rounded">
+        <button id="uploadBtn" class="btn mb-4">🚀 Upload & Enhance</button>
+        <p id="status" class="text-sm text-green-300"></p>
+        <a id="downloadLink" class="btn hidden" download>⬇ Download Enhanced Photo</a>
     </div>
 
     <script>
-        const dropZone = document.getElementById("dropZone");
-        const fileInput = document.getElementById("fileInput");
+        document.getElementById("uploadBtn").addEventListener("click", async () => {
+            const fileInput = document.getElementById("fileInput").files[0];
+            if (!fileInput) return alert("Pilih gambar dulu bro!");
 
-        dropZone.addEventListener("click", () => fileInput.click());
-        dropZone.addEventListener("dragover", (e) => {
-            e.preventDefault();
-            dropZone.style.background = "rgba(255, 255, 255, 0.2)";
-        });
-        dropZone.addEventListener("dragleave", () => dropZone.style.background = "rgba(255, 255, 255, 0.1)");
-        dropZone.addEventListener("drop", (e) => {
-            e.preventDefault();
-            dropZone.style.background = "rgba(255, 255, 255, 0.1)";
-            fileInput.files = e.dataTransfer.files;
-        });
-
-        async function uploadFile() {
-            const uploadBtn = document.getElementById('uploadBtn');
-            const progress = document.getElementById('progress');
-            const progressBar = document.getElementById('progressBar');
-            const resultDiv = document.getElementById("result");
-            const enhancedImage = document.getElementById("enhancedImage");
-            const downloadBtn = document.getElementById("downloadBtn");
-
-            if (!fileInput.files.length) {
-                alert("Pilih gambar terlebih dahulu!");
-                return;
-            }
-
-            uploadBtn.innerText = "🔄 Sedang Diproses...";
-            uploadBtn.disabled = true;
-            progress.classList.remove("hidden");
-            progressBar.style.width = "20%";
-
-            const file = fileInput.files[0];
             const formData = new FormData();
-            formData.append("file", file);
+            formData.append("file", fileInput);
 
-            try {
-                const uploadResponse = await fetch("https://filezone-api.caliph.dev/upload", {
-                    method: "POST",
-                    body: formData
-                });
-                progressBar.style.width = "50%";
+            document.getElementById("status").innerText = "🔄 Mengupload gambar...";
+            
+            // Upload ke FileZone
+            let uploadRes = await fetch("https://filezone-api.caliph.dev/upload", {
+                method: "POST",
+                body: formData
+            }).then(res => res.json());
 
-                const uploadResult = await uploadResponse.json();
-                if (!uploadResult.status) throw new Error("Upload gagal");
+            if (!uploadRes.status) return alert("❌ Gagal mengupload!");
+            let imageUrl = uploadRes.result.url_file;
 
-                const imageUrl = uploadResult.result.url_file;
-                const hdUrl = `https://apii.baguss.web.id/tools/remini?apikey=bagus&url=${encodeURIComponent(imageUrl)}`;
+            document.getElementById("status").innerText = "✅ Foto berhasil diunggah! Sedang diproses...";
 
-                enhancedImage.src = hdUrl;
-                resultDiv.classList.remove("hidden");
+            // Proses Enhance di Remini API
+            let enhanceUrl = `https://apii.baguss.web.id/tools/remini?apikey=bagus&url=${imageUrl}`;
+            let enhanceRes = await fetch(enhanceUrl);
+            let enhanceBlob = await enhanceRes.blob();
 
-                progressBar.style.width = "80%";
+            // Upload hasil ke FileZone lagi
+            const resultForm = new FormData();
+            resultForm.append("file", enhanceBlob, "enhanced.jpg");
 
-                const hdFile = await fetch(hdUrl);
-                const hdBlob = await hdFile.blob();
-                const hdFormData = new FormData();
-                hdFormData.append("file", hdBlob, "enhanced.jpg");
+            let resultUpload = await fetch("https://filezone-api.caliph.dev/upload", {
+                method: "POST",
+                body: resultForm
+            }).then(res => res.json());
 
-                const finalUploadResponse = await fetch("https://filezone-api.caliph.dev/upload", {
-                    method: "POST",
-                    body: hdFormData
-                });
+            if (!resultUpload.status) return alert("❌ Gagal menyimpan hasil!");
 
-                const finalUploadResult = await finalUploadResponse.json();
-                if (!finalUploadResult.status) throw new Error("Upload hasil HD gagal");
+            let finalUrl = resultUpload.result.url;
 
-                downloadBtn.href = finalUploadResult.result.url;
-                downloadBtn.setAttribute("download", "HD-Image.jpg");
-
-                setTimeout(() => {
-                    const link = document.createElement("a");
-                    link.href = finalUploadResult.result.url;
-                    link.setAttribute("download", "HD-Image.jpg");
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                }, 1000);
-
-                progressBar.style.width = "100%";
-            } catch (error) {
-                alert("Terjadi kesalahan: " + error.message);
-            } finally {
-                uploadBtn.innerText = "🚀 Proses Sekarang";
-                uploadBtn.disabled = false;
-                setTimeout(() => progress.classList.add("hidden"), 2000);
-            }
-        }
+            document.getElementById("status").innerText = "✅ Foto berhasil ditingkatkan!";
+            let downloadLink = document.getElementById("downloadLink");
+            downloadLink.href = finalUrl;
+            downloadLink.classList.remove("hidden");
+        });
     </script>
 
 </body>
