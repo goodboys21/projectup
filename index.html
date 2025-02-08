@@ -36,19 +36,6 @@
             background: rgba(255, 255, 255, 0.1);
             border-color: #007BFF;
         }
-        .btn-modern {
-            background: #007BFF;
-            padding: 14px;
-            border-radius: 10px;
-            font-weight: bold;
-            width: 100%;
-            margin-top: 10px;
-            transition: all 0.3s ease-in-out;
-        }
-        .btn-modern:hover {
-            background: #0056B3;
-            transform: scale(1.05);
-        }
         .hidden { display: none; }
         .progress-bar-container {
             width: 100%;
@@ -62,9 +49,28 @@
             background: linear-gradient(to right, #00AFFF, #007BFF);
             transition: width 0.4s ease-in-out;
         }
+        .typing-effect {
+            font-size: 24px;
+            font-weight: bold;
+            color: #00AFFF;
+            white-space: nowrap;
+            overflow: hidden;
+            border-right: 3px solid;
+            width: 0;
+            animation: typing 2s steps(10, end) forwards, blink 0.8s infinite;
+        }
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 120px }
+        }
+        @keyframes blink {
+            50% { border-color: transparent }
+        }
     </style>
 </head>
 <body>
+
+    <div class="typing-effect">❗Bagus HD❗</div>
 
     <div class="container">
         <h1 class="text-2xl font-bold mb-4">🔍 HD-kan Foto Kamu</h1>
@@ -73,10 +79,6 @@
             <p>Drag & Drop atau Klik untuk Pilih Gambar</p>
             <input type="file" id="fileInput" class="hidden" accept="image/*">
         </div>
-
-        <button onclick="uploadFile()" id="uploadBtn" class="btn-modern">
-            🚀 Proses Sekarang
-        </button>
 
         <div id="progress" class="hidden mt-4">
             <p class="text-sm text-gray-300">Mengunggah...</p>
@@ -106,23 +108,20 @@
             e.preventDefault();
             dropZone.style.background = "rgba(255, 255, 255, 0.05)";
             fileInput.files = e.dataTransfer.files;
+            uploadFile();
         });
 
+        fileInput.addEventListener("change", uploadFile);
+
         async function uploadFile() {
-            const uploadBtn = document.getElementById('uploadBtn');
             const progress = document.getElementById('progress');
             const progressBar = document.getElementById('progressBar');
             const resultDiv = document.getElementById("result");
             const enhancedImage = document.getElementById("enhancedImage");
             const downloadBtn = document.getElementById("downloadBtn");
 
-            if (!fileInput.files.length) {
-                alert("Pilih gambar terlebih dahulu!");
-                return;
-            }
+            if (!fileInput.files.length) return;
 
-            uploadBtn.innerText = "🔄 Sedang Diproses...";
-            uploadBtn.disabled = true;
             progress.classList.remove("hidden");
             progressBar.style.width = "20%";
 
@@ -177,8 +176,6 @@
             } catch (error) {
                 alert("Terjadi kesalahan: " + error.message);
             } finally {
-                uploadBtn.innerText = "🚀 Proses Sekarang";
-                uploadBtn.disabled = false;
                 setTimeout(() => progress.classList.add("hidden"), 2000);
             }
         }
