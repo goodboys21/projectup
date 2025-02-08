@@ -6,21 +6,15 @@
     <title>HD Enhancer | ProjectUp</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Styling video agar jadi background penuh */
-        .video-container {
+        /* Video Background */
+        .video-bg {
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            z-index: -1;
-        }
-
-        .video-container video {
-            width: 100%;
-            height: 100%;
+            width: 100vw;
+            height: 100vh;
             object-fit: cover;
+            z-index: -1;
         }
 
         /* Styling body */
@@ -28,37 +22,37 @@
             color: white;
             height: 100vh;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
             font-family: 'Arial', sans-serif;
-            position: relative;
+            margin: 0;
             overflow: hidden;
+            position: relative;
         }
 
-        /* Kotak utama dengan efek blur transparan */
+        /* Kotak utama dengan blur */
         .container {
             width: 90%;
             max-width: 600px;
             text-align: center;
             padding: 20px;
-            background: rgba(255, 255, 255, 0.15); /* Warna putih dengan transparansi */
-            backdrop-filter: blur(20px); /* Efek blur */
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(15px);
             border-radius: 12px;
             box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
         }
 
-        /* Drop-zone untuk upload gambar */
+        /* Drop-zone */
         .drop-zone {
             border: 2px dashed rgba(255, 255, 255, 0.7);
             padding: 30px;
             border-radius: 12px;
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.15);
             transition: 0.3s ease-in-out;
         }
 
         .drop-zone:hover {
-            background: rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.25);
         }
 
         /* Tombol */
@@ -77,20 +71,18 @@
             transform: scale(1.05);
         }
 
-        /* Sembunyikan elemen */
         .hidden { display: none; }
     </style>
 </head>
 <body>
 
     <!-- Video Background -->
-    <div class="video-container">
-        <video autoplay loop muted>
-            <source src="https://files.catbox.moe/4u8827.mp4" type="video/mp4">
-            Browser kamu tidak mendukung video HTML5.
-        </video>
-    </div>
+    <video class="video-bg" autoplay loop muted playsinline>
+        <source src="https://files.catbox.moe/4u8827.mp4" type="video/mp4">
+        Browser kamu tidak mendukung video HTML5.
+    </video>
 
+    <!-- Konten -->
     <div class="container">
         <h1 class="text-2xl font-bold mb-4">🔍 HD-kan Foto Kamu</h1>
 
@@ -124,12 +116,12 @@
         dropZone.addEventListener("click", () => fileInput.click());
         dropZone.addEventListener("dragover", (e) => {
             e.preventDefault();
-            dropZone.style.background = "rgba(255, 255, 255, 0.3)";
+            dropZone.style.background = "rgba(255, 255, 255, 0.2)";
         });
-        dropZone.addEventListener("dragleave", () => dropZone.style.background = "rgba(255, 255, 255, 0.2)");
+        dropZone.addEventListener("dragleave", () => dropZone.style.background = "rgba(255, 255, 255, 0.15)");
         dropZone.addEventListener("drop", (e) => {
             e.preventDefault();
-            dropZone.style.background = "rgba(255, 255, 255, 0.2)";
+            dropZone.style.background = "rgba(255, 255, 255, 0.15)";
             fileInput.files = e.dataTransfer.files;
         });
 
