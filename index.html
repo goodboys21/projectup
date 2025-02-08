@@ -3,11 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HD Enhancer | ProjectUp</title>
+    <title>Bagus HD | Space Edition</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        /* Background video */
+        .video-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1;
+        }
+
         body {
-            background: #1B1B1F;
             color: white;
             height: 100vh;
             display: flex;
@@ -15,57 +25,71 @@
             align-items: center;
             justify-content: center;
             font-family: 'Arial', sans-serif;
+            backdrop-filter: blur(4px);
         }
+
+        /* Container dengan efek luar angkasa */
         .container {
             width: 90%;
             max-width: 600px;
             text-align: center;
             padding: 20px;
-            background: #2A2D3E;
-            border-radius: 12px;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+            background: rgba(15, 15, 30, 0.8);
+            border-radius: 15px;
+            box-shadow: 0px 0px 20px rgba(0, 255, 255, 0.5);
+            border: 1px solid rgba(0, 255, 255, 0.3);
         }
+
         .drop-zone {
-            border: 2px dashed #00AFFF;
+            border: 2px dashed cyan;
             padding: 30px;
             border-radius: 12px;
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(255, 255, 255, 0.1);
             transition: 0.3s ease-in-out;
         }
+
         .drop-zone:hover {
-            background: rgba(255, 255, 255, 0.1);
-            border-color: #007BFF;
+            background: rgba(255, 255, 255, 0.2);
+            border-color: #00FFFF;
         }
+
         .progress-bar-container {
             width: 100%;
-            background: #555;
+            background: rgba(255, 255, 255, 0.2);
             border-radius: 10px;
             overflow: hidden;
         }
+
         .progress-bar {
             height: 6px;
             width: 0;
-            background: linear-gradient(to right, #00AFFF, #007BFF);
+            background: linear-gradient(to right, cyan, blue);
             transition: width 0.4s ease-in-out;
         }
+
         .hidden { display: none; }
+
         .btn-modern {
-            background: #007BFF;
+            background: linear-gradient(90deg, #00FFFF, #007BFF);
             padding: 14px;
             border-radius: 10px;
             font-weight: bold;
             width: 100%;
             margin-top: 10px;
             transition: all 0.3s ease-in-out;
+            box-shadow: 0px 0px 10px cyan;
         }
+
         .btn-modern:hover {
-            background: #0056B3;
+            background: linear-gradient(90deg, #007BFF, #00FFFF);
             transform: scale(1.05);
         }
+
+        /* Efek ketik */
         .typing-effect {
             font-size: 24px;
             font-weight: bold;
-            color: #00AFFF;
+            color: cyan;
             text-align: center;
             white-space: nowrap;
             overflow: hidden;
@@ -73,10 +97,12 @@
             width: 0;
             animation: typing 3s steps(20, end) forwards, blink 0.6s infinite;
         }
+
         @keyframes typing {
             from { width: 0 }
             to { width: 190px }
         }
+
         @keyframes blink {
             50% { border-color: transparent; }
         }
@@ -84,12 +110,19 @@
 </head>
 <body>
 
+    <!-- Background Video -->
+    <video autoplay muted loop class="video-bg">
+        <source src="https://files.catbox.moe/4u8827.mp4" type="video/mp4">
+        Browser lo gak support video background, coy!
+    </video>
+
+    <!-- Efek ketik Bagus HD -->
     <div class="typing-effect">
         <!> Bagus HD <!>
     </div>
 
     <div class="container">
-        <h1 class="text-2xl font-bold mb-4">🔍 HD-kan Foto Kamu</h1>
+        <h1 class="text-2xl font-bold mb-4">🚀 HD-kan Foto Kamu</h1>
 
         <div class="drop-zone" id="dropZone">
             <p>Drag & Drop atau Klik untuk Pilih Gambar</p>
@@ -124,10 +157,10 @@
         e.preventDefault();
         dropZone.style.background = "rgba(255, 255, 255, 0.2)";
     });
-    dropZone.addEventListener("dragleave", () => dropZone.style.background = "rgba(255, 255, 255, 0.05)");
+    dropZone.addEventListener("dragleave", () => dropZone.style.background = "rgba(255, 255, 255, 0.1)");
     dropZone.addEventListener("drop", (e) => {
         e.preventDefault();
-        dropZone.style.background = "rgba(255, 255, 255, 0.05)";
+        dropZone.style.background = "rgba(255, 255, 255, 0.1)";
         fileInput.files = e.dataTransfer.files;
         uploadFile();
     });
@@ -163,34 +196,9 @@
             enhancedImage.src = hdUrl;
             resultDiv.classList.remove("hidden");
 
-            progressBar.style.width = "80%";
-
-            const hdFile = await fetch(hdUrl);
-            const hdBlob = await hdFile.blob();
-            const hdFormData = new FormData();
-            hdFormData.append("file", hdBlob, "enhanced.jpg");
-
-            const finalUploadResponse = await fetch("https://filezone-api.caliph.dev/upload", {
-                method: "POST",
-                body: hdFormData
-            });
-
-            const finalUploadResult = await finalUploadResponse.json();
-            if (!finalUploadResult.status) throw new Error("Upload hasil HD gagal");
-
-            downloadBtn.href = finalUploadResult.result.url;
-            downloadBtn.setAttribute("download", "HD-Image.jpg");
-
-            setTimeout(() => {
-                const link = document.createElement("a");
-                link.href = finalUploadResult.result.url;
-                link.setAttribute("download", "HD-Image.jpg");
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-            }, 1000);
-
             progressBar.style.width = "100%";
+            downloadBtn.href = hdUrl;
+            downloadBtn.setAttribute("download", "HD-Image.jpg");
         } catch (error) {
             alert("Terjadi kesalahan: " + error.message);
         } finally {
