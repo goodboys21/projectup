@@ -3,14 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HD Enhancer | ProjectUp</title>
+    <title>BagusHD | Enhancer</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
-        
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600&display=swap');
+
         body {
-            font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #1E1E2E, #6D28D9);
+            font-family: 'Orbitron', sans-serif;
+            background: url('https://source.unsplash.com/1600x900/?galaxy,space,stars') no-repeat center center fixed;
+            background-size: cover;
             color: white;
             height: 100vh;
             display: flex;
@@ -20,39 +21,44 @@
             overflow: hidden;
         }
 
+        .logo {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 22px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #ff00ff;
+            text-shadow: 0px 0px 8px #ff00ff, 0px 0px 16px #ff00ff;
+        }
+
         .container {
             width: 90%;
             max-width: 600px;
             text-align: center;
             padding: 25px;
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.7);
             border-radius: 16px;
-            backdrop-filter: blur(10px);
-            box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.3);
-            transition: all 0.3s ease-in-out;
-        }
-
-        .container:hover {
-            box-shadow: 0px 10px 25px rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(5px);
+            box-shadow: 0px 8px 20px rgba(255, 0, 255, 0.3);
         }
 
         .drop-zone {
             border: 2px dashed #fff;
             padding: 40px;
             border-radius: 16px;
-            background: rgba(255, 255, 255, 0.15);
+            background: rgba(255, 255, 255, 0.1);
             transition: 0.3s ease-in-out;
             cursor: pointer;
-            position: relative;
-            overflow: hidden;
         }
 
         .drop-zone:hover {
-            background: rgba(255, 255, 255, 0.25);
+            background: rgba(255, 255, 255, 0.2);
         }
 
         .btn-modern {
-            background: linear-gradient(45deg, #8B5CF6, #4C1D95);
+            background: linear-gradient(45deg, #ff00ff, #6a0dad);
             padding: 14px;
             border-radius: 12px;
             font-weight: bold;
@@ -60,12 +66,12 @@
             transition: all 0.3s ease-in-out;
             text-transform: uppercase;
             letter-spacing: 1px;
-            box-shadow: 0 4px 10px rgba(139, 92, 246, 0.5);
+            box-shadow: 0 4px 10px rgba(255, 0, 255, 0.5);
         }
 
         .btn-modern:hover {
             transform: scale(1.05);
-            background: linear-gradient(45deg, #A78BFA, #6D28D9);
+            background: linear-gradient(45deg, #e100ff, #8a2be2);
         }
 
         .hidden { display: none; }
@@ -73,8 +79,10 @@
 </head>
 <body>
 
+    <div class="logo">BagusHD</div>
+
     <div class="container">
-        <h1 class="text-2xl font-semibold mb-4">✨ HD-kan Foto Kamu</h1>
+        <h1 class="text-2xl font-semibold mb-4">🚀 Tingkatkan Kualitas Foto!</h1>
 
         <div class="drop-zone" id="dropZone">
             <p class="text-lg">📤 Drag & Drop atau Klik untuk Pilih Gambar</p>
@@ -82,7 +90,7 @@
         </div>
 
         <button onclick="uploadFile()" id="uploadBtn" class="btn-modern mt-4">
-            🚀 Proses Sekarang
+            🌌 Proses Sekarang
         </button>
 
         <div id="progress" class="hidden mt-4">
@@ -106,12 +114,12 @@
         dropZone.addEventListener("click", () => fileInput.click());
         dropZone.addEventListener("dragover", (e) => {
             e.preventDefault();
-            dropZone.style.background = "rgba(255, 255, 255, 0.3)";
+            dropZone.style.background = "rgba(255, 255, 255, 0.2)";
         });
-        dropZone.addEventListener("dragleave", () => dropZone.style.background = "rgba(255, 255, 255, 0.15)");
+        dropZone.addEventListener("dragleave", () => dropZone.style.background = "rgba(255, 255, 255, 0.1)");
         dropZone.addEventListener("drop", (e) => {
             e.preventDefault();
-            dropZone.style.background = "rgba(255, 255, 255, 0.15)";
+            dropZone.style.background = "rgba(255, 255, 255, 0.1)";
             fileInput.files = e.dataTransfer.files;
         });
 
