@@ -3,85 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Uploader HD | ProjectUp</title>
+    <title>HD Enhancer | ProjectUp</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body {
-            background: #121212;
+            background: #1E1E2E;
             color: white;
-            min-height: 100vh;
+            height: 100vh;
             display: flex;
             flex-direction: column;
-            justify-content: center;
             align-items: center;
+            justify-content: center;
+            font-family: 'Arial', sans-serif;
+        }
+        .container {
+            width: 90%;
+            max-width: 400px;
             text-align: center;
-            font-family: Arial, sans-serif;
         }
         .drop-zone {
-            border: 2px dashed #3B82F6;
+            border: 2px dashed #6D28D9;
             padding: 30px;
-            cursor: pointer;
-            border-radius: 10px;
-            background: rgba(255, 255, 255, 0.1);
-            transition: 0.3s;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            transition: 0.3s ease-in-out;
         }
         .drop-zone:hover {
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.1);
         }
         .btn-modern {
-            background: #3B82F6;
-            padding: 12px;
-            border-radius: 8px;
+            background: #6D28D9;
+            padding: 14px;
+            border-radius: 10px;
             font-weight: bold;
-            cursor: pointer;
-            transition: 0.3s;
+            width: 100%;
+            margin-top: 10px;
+            transition: all 0.3s ease-in-out;
         }
         .btn-modern:hover {
-            background: #2563EB;
+            background: #4C1D95;
             transform: scale(1.05);
         }
         .hidden { display: none; }
-        .footer-icons a {
-            margin: 0 10px;
-            font-size: 1.5rem;
-        }
     </style>
 </head>
 <body>
 
-    <h1 class="text-3xl font-bold mb-4">📸 HD-kan Foto Kamu!</h1>
+    <div class="container">
+        <h1 class="text-2xl font-bold mb-4">🔍 HD-kan Foto Kamu</h1>
 
-    <div class="drop-zone w-96" id="dropZone">
-        <p>Drag & Drop your file here or click to select</p>
-        <input type="file" id="fileInput" class="hidden" accept="image/*">
-    </div>
-
-    <button onclick="uploadFile()" id="uploadBtn" class="btn-modern mt-4 w-96">
-        🚀 Upload & Proses
-    </button>
-
-    <div id="progress" class="hidden mt-4 w-96">
-        <div class="w-full bg-gray-300 rounded-full h-2">
-            <div id="progressBar" class="h-2 bg-green-500 rounded-full transition-all"></div>
+        <div class="drop-zone" id="dropZone">
+            <p>Drag & Drop atau Klik untuk Pilih Gambar</p>
+            <input type="file" id="fileInput" class="hidden" accept="image/*">
         </div>
-        <p id="progressText" class="text-gray-400 text-sm mt-1">Mengunggah...</p>
-    </div>
 
-    <div id="result" class="hidden mt-6 w-96">
-        <h2 class="text-lg font-semibold">Hasil HD:</h2>
-        <img id="enhancedImage" class="mt-4 rounded-lg shadow-md border border-gray-300 w-full">
-        <a id="downloadBtn" href="#" class="btn-modern block mt-4">📥 Download Gambar</a>
-    </div>
+        <button onclick="uploadFile()" id="uploadBtn" class="btn-modern">
+            🚀 Proses Sekarang
+        </button>
 
-    <footer class="absolute bottom-6 text-gray-400">
-        <p>© 2025 ProjectUp. All rights reserved.</p>
-        <div class="footer-icons flex justify-center mt-2">
-            <a href="https://wa.me/6281234567890" target="_blank">📞</a>
-            <a href="https://www.tiktok.com/@bagus" target="_blank">🎵</a>
-            <a href="https://www.instagram.com/bagus" target="_blank">📷</a>
-            <a href="https://t.me/bagus" target="_blank">✈️</a>
+        <div id="progress" class="hidden mt-4">
+            <p class="text-sm text-gray-300">Mengunggah...</p>
+            <div class="w-full bg-gray-600 rounded-full h-2 mt-1">
+                <div id="progressBar" class="h-2 bg-purple-500 rounded-full transition-all"></div>
+            </div>
         </div>
-    </footer>
+
+        <div id="result" class="hidden mt-6">
+            <h2 class="text-lg font-semibold">Hasil HD:</h2>
+            <img id="enhancedImage" class="mt-4 rounded-lg shadow-md border border-gray-300 w-full">
+            <a id="downloadBtn" href="#" class="btn-modern block mt-4">📥 Download Gambar</a>
+        </div>
+    </div>
 
     <script>
         const dropZone = document.getElementById("dropZone");
@@ -90,12 +82,12 @@
         dropZone.addEventListener("click", () => fileInput.click());
         dropZone.addEventListener("dragover", (e) => {
             e.preventDefault();
-            dropZone.style.background = "rgba(255, 255, 255, 0.3)";
+            dropZone.style.background = "rgba(255, 255, 255, 0.2)";
         });
-        dropZone.addEventListener("dragleave", () => dropZone.style.background = "rgba(255, 255, 255, 0.1)");
+        dropZone.addEventListener("dragleave", () => dropZone.style.background = "rgba(255, 255, 255, 0.05)");
         dropZone.addEventListener("drop", (e) => {
             e.preventDefault();
-            dropZone.style.background = "rgba(255, 255, 255, 0.1)";
+            dropZone.style.background = "rgba(255, 255, 255, 0.05)";
             fileInput.files = e.dataTransfer.files;
         });
 
@@ -103,7 +95,6 @@
             const uploadBtn = document.getElementById('uploadBtn');
             const progress = document.getElementById('progress');
             const progressBar = document.getElementById('progressBar');
-            const progressText = document.getElementById('progressText');
             const resultDiv = document.getElementById("result");
             const enhancedImage = document.getElementById("enhancedImage");
             const downloadBtn = document.getElementById("downloadBtn");
@@ -128,7 +119,6 @@
                     body: formData
                 });
                 progressBar.style.width = "50%";
-                progressText.innerText = "Mengunggah ke server...";
 
                 const uploadResult = await uploadResponse.json();
                 if (!uploadResult.status) throw new Error("Upload gagal");
@@ -140,7 +130,6 @@
                 resultDiv.classList.remove("hidden");
 
                 progressBar.style.width = "80%";
-                progressText.innerText = "Memproses gambar...";
 
                 const hdFile = await fetch(hdUrl);
                 const hdBlob = await hdFile.blob();
@@ -168,11 +157,10 @@
                 }, 1000);
 
                 progressBar.style.width = "100%";
-                progressText.innerText = "Selesai!";
             } catch (error) {
                 alert("Terjadi kesalahan: " + error.message);
             } finally {
-                uploadBtn.innerText = "🚀 Upload & Proses";
+                uploadBtn.innerText = "🚀 Proses Sekarang";
                 uploadBtn.disabled = false;
                 setTimeout(() => progress.classList.add("hidden"), 2000);
             }
