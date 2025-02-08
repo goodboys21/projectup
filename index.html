@@ -6,29 +6,15 @@
     <title>BagusHD - AI Photo Enhancer</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <style>
-        /* Background luar angkasa */
-        body {
-            background: url('https://source.unsplash.com/1600x900/?galaxy,space,stars') no-repeat center center/cover;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-        }
-
-        /* Efek bintang */
-        .stars {
+        /* Background Video */
+        .bg-video {
             position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
-            background: url('https://i.imgur.com/VbGx9Hq.png') repeat;
-            animation: moveStars 50s linear infinite;
-        }
-
-        @keyframes moveStars {
-            from {background-position: 0 0;}
-            to {background-position: -10000px 5000px;}
+            object-fit: cover;
+            z-index: -1;
         }
 
         /* Card Upload */
@@ -77,32 +63,79 @@
             color: white;
             text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
         }
+
+        /* Progress Bar */
+        .progress-container {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+            overflow: hidden;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .progress-bar {
+            width: 0%;
+            height: 8px;
+            background: #00ff99;
+            transition: width 0.3s;
+        }
     </style>
 </head>
 <body>
 
-    <div class="stars"></div>
+    <video autoplay loop muted playsinline class="bg-video">
+        <source src="https://files.catbox.moe/4u8827.mp4" type="video/mp4">
+    </video>
+
     <div class="logo">BagusHD</div>
 
     <div class="card">
         <h1 class="text-2xl font-bold mb-4">✨ AI Photo Enhancer</h1>
-        <input type="file" id="fileInput" class="mb-4 p-2 w-full text-black bg-white rounded">
-        <button id="uploadBtn" class="btn mb-4">🚀 Upload & Enhance</button>
+        <input type="file" id="fileInput" accept="image/*" capture="environment" class="hidden">
+        <button id="selectFileBtn" class="btn mb-4">📷 Pilih dari Galeri</button>
+        <button id="uploadBtn" class="btn mb-4 hidden">🚀 Upload & Enhance</button>
+        <div class="progress-container"><div class="progress-bar"></div></div>
         <p id="status" class="text-sm text-green-300"></p>
         <a id="downloadLink" class="btn hidden" download>⬇ Download Enhanced Photo</a>
     </div>
 
     <script>
-        document.getElementById("uploadBtn").addEventListener("click", async () => {
-            const fileInput = document.getElementById("fileInput").files[0];
-            if (!fileInput) return alert("Pilih gambar dulu bro!");
+        const fileInput = document.getElementById("fileInput");
+        const selectFileBtn = document.getElementById("selectFileBtn");
+        const uploadBtn = document.getElementById("uploadBtn");
+        const progressBar = document.querySelector(".progress-bar");
+        const progressContainer = document.querySelector(".progress-container");
+        const statusText = document.getElementById("status");
+        const downloadLink = document.getElementById("downloadLink");
 
-            const formData = new FormData();
-            formData.append("file", fileInput);
+        // Pilih file dari galeri
+        selectFileBtn.addEventListener("click", () => {
+            fileInput.click();
+        });
 
-            document.getElementById("status").innerText = "🔄 Mengupload gambar...";
-            
+        // File dipilih, aktifkan tombol upload
+        fileInput.addEventListener("change", () => {
+            if (fileInput.files.length > 0) {
+                uploadBtn.classList.remove("hidden");
+                statusText.innerText = "✅ Foto siap diunggah!";
+            }
+        });
+
+        // Upload & Enhance Foto
+        uploadBtn.addEventListener("click", async () => {
+            const file = fileInput.files[0];
+            if (!file) return alert("Pilih gambar dulu bro!");
+
+            // Tampilkan progress
+            progressContainer.style.display = "block";
+            progressBar.style.width = "10%";
+            statusText.innerText = "🔄 Mengupload gambar...";
+
             // Upload ke FileZone
+            const formData = new FormData();
+            formData.append("file", file);
+
             let uploadRes = await fetch("https://filezone-api.caliph.dev/upload", {
                 method: "POST",
                 body: formData
@@ -111,12 +144,16 @@
             if (!uploadRes.status) return alert("❌ Gagal mengupload!");
             let imageUrl = uploadRes.result.url_file;
 
-            document.getElementById("status").innerText = "✅ Foto berhasil diunggah! Sedang diproses...";
+            progressBar.style.width = "50%";
+            statusText.innerText = "⏳ Memproses gambar dengan AI...";
 
             // Proses Enhance di Remini API
             let enhanceUrl = `https://apii.baguss.web.id/tools/remini?apikey=bagus&url=${imageUrl}`;
             let enhanceRes = await fetch(enhanceUrl);
             let enhanceBlob = await enhanceRes.blob();
+
+            progressBar.style.width = "80%";
+            statusText.innerText = "📤 Menyimpan hasil...";
 
             // Upload hasil ke FileZone lagi
             const resultForm = new FormData();
@@ -131,10 +168,13 @@
 
             let finalUrl = resultUpload.result.url;
 
-            document.getElementById("status").innerText = "✅ Foto berhasil ditingkatkan!";
-            let downloadLink = document.getElementById("downloadLink");
+            progressBar.style.width = "100%";
+            statusText.innerText = "✅ Foto berhasil ditingkatkan!";
+            
+            // Auto-download hasil
             downloadLink.href = finalUrl;
             downloadLink.classList.remove("hidden");
+            downloadLink.click();
         });
     </script>
 
