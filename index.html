@@ -165,7 +165,7 @@
             const hdImageResponse = await fetch(hdUrl);
             const hdImageBlob = await hdImageResponse.blob();
 
-            // Upload hasil HD
+            // Upload hasil HD ke Filezone
             const hdFormData = new FormData();
             hdFormData.append("file", hdImageBlob, "HD-Image.jpg");
 
@@ -182,10 +182,14 @@
             enhancedImage.src = hdUploadResult.result.url_file;
             downloadBtn.href = uploadLink;
             downloadBtn.style.display = "block";
-            downloadBtn.setAttribute("download", "HD-Image.jpg");
 
             resultDiv.style.display = "block";
             loadingText.style.display = "none";
+
+            // Auto-download setelah upload sukses
+            setTimeout(() => {
+                window.location.href = uploadLink;
+            }, 1000);
 
         } catch (error) {
             loadingText.style.display = "none";
