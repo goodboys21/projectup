@@ -16,7 +16,7 @@
             text-align: center;
             color: white;
         }
-
+        
         .video-bg {
             position: fixed;
             top: 0;
@@ -69,16 +69,17 @@
             height: auto;
             max-height: 500px;
             border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
             border: 2px solid #00AFFF;
             display: block;
             margin: 0 auto;
         }
 
-        .info-text {
-            color: #00FF00;
-            font-size: 14px;
-            margin-top: 10px;
+        /* Teks hijau untuk instruksi download */
+        .download-text {
+            color: #00FF00; /* Warna hijau */
             font-weight: bold;
+            margin-top: 10px;
         }
     </style>
 </head>
@@ -101,7 +102,7 @@
         <div id="result">
             <h2 class="text-md font-semibold">Hasil HD:</h2>
             <img id="enhancedImage">
-            <p class="info-text">✅ Foto berhasil di HD-kan! <br> Tekan lama pada foto lalu pilih "Download Gambar". <br> <b>By: Bagus Bahril</b></p>
+            <p class="download-text">✅ Gambar sukses di-HD-kan. Silakan tekan lama gambar dan pilih "Download".</p>
         </div>
     </div>
 
@@ -141,7 +142,6 @@
         resultDiv.style.display = "none";
 
         try {
-            // Upload gambar awal
             const uploadResponse = await fetch("https://filezone-api.caliph.dev/upload", {
                 method: "POST",
                 body: formData
@@ -151,28 +151,14 @@
             if (!uploadResult.status) throw new Error("Upload gagal");
 
             const imageUrl = uploadResult.result.url_file;
+            const hdUrl = `https://apii.baguss.web.id/tools/remini?apikey=bagus&url=${encodeURIComponent(imageUrl)}`;
 
-            // Proses HD
-            const hdUrl = `https://apii.bagus.web.id/tools/remini?apikey=bagus&url=${encodeURIComponent(imageUrl)}`;
-            const hdImageResponse = await fetch(hdUrl);
-            const hdImageBlob = await hdImageResponse.blob();
+            setTimeout(() => {
+                loadingText.style.display = "none";
+                enhancedImage.src = hdUrl;
 
-            // Upload hasil HD ke Filezone
-            const hdFormData = new FormData();
-            hdFormData.append("file", hdImageBlob, "HD-Image.jpg");
-
-            const hdUploadResponse = await fetch("https://filezone-api.caliph.dev/upload", {
-                method: "POST",
-                body: hdFormData
-            });
-
-            const hdUploadResult = await hdUploadResponse.json();
-            if (!hdUploadResult.status) throw new Error("Upload gambar HD gagal");
-
-            enhancedImage.src = hdUploadResult.result.url_file;
-
-            resultDiv.style.display = "block";
-            loadingText.style.display = "none";
+                resultDiv.style.display = "block";  
+            }, 2000);
 
         } catch (error) {
             loadingText.style.display = "none";
