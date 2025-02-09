@@ -26,24 +26,12 @@
             z-index: -1;
         }
 
-        /* Tulisan "Bagus HD" Pudar */
-        .bg-text {
-            position: absolute;
-            top: 20%;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 36px;
-            font-weight: bold;
-            color: rgba(0, 255, 255, 0.2); /* Transparan */
-            z-index: 1;
-            user-select: none;
-        }
-
-        /* Container Utama */
+        /* Container Utama dengan Efek Blur */
         .container {
             width: 90%;
             max-width: 400px;
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
             border-radius: 12px;
             padding: 15px;
             box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
@@ -71,7 +59,7 @@
             margin-top: 10px;
         }
 
-        /* Hasil HD (di tengah) */
+        /* Hasil HD (Gambar Menyesuaikan Ukuran Aslinya) */
         #result {
             display: none;
             text-align: center;
@@ -79,18 +67,16 @@
         }
 
         /* Gambar HD */
-#enhancedImage {
-    width: 100%; /* Gunakan 100% biar menyesuaikan lebar parent */
-    max-width: 300px; /* Maksimal ukuran */
-    height: auto; /* Biar proporsional */
-    max-height: 250px; /* Batasi tinggi biar gak terlalu panjang */
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-    border: 2px solid #00AFFF;
-    display: block;
-    margin: 0 auto;
-    object-fit: contain; /* Biar gambar nggak kepotong */
-}
+        #enhancedImage {
+            width: auto;
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            border: 2px solid #00AFFF;
+            display: block;
+            margin: 0 auto;
+        }
 
         /* Button Download */
         .btn-modern {
@@ -108,9 +94,6 @@
     </style>
 </head>
 <body>
-
-    <!-- Tulisan "Bagus HD" Pudar -->
-    <div class="bg-text">Bagus HD</div>
 
     <!-- Background Video -->
     <video autoplay loop muted>
