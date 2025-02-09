@@ -7,7 +7,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
 
     <style>
-        /* Background Video Fullscreen */
         body, html {
             margin: 0;
             padding: 0;
@@ -17,7 +16,7 @@
             text-align: center;
             color: white;
         }
-        
+
         .video-bg {
             position: fixed;
             top: 0;
@@ -28,7 +27,6 @@
             z-index: -1;
         }
 
-        /* Container */
         .container {
             width: 90%;
             max-width: 400px;
@@ -44,20 +42,6 @@
             z-index: 2;
         }
 
-        /* Kotak Blur */
-        #blackBox {
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(10px);
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.6), 
-                        0 0 40px rgba(255, 255, 255, 0.4), 
-                        0 0 60px rgba(255, 255, 255, 0.2);
-            padding: 20px;
-            border-radius: 10px;
-            color: white;
-            text-align: center;
-        }
-
-        /* Drop Zone */
         .drop-zone {
             border: 2px dashed #00AFFF;
             padding: 15px;
@@ -66,7 +50,6 @@
             transition: 0.3s ease-in-out;
         }
 
-        /* Loading */
         .loading {
             display: none;
             font-weight: bold;
@@ -74,27 +57,23 @@
             margin-top: 10px;
         }
 
-        /* Hasil HD */
         #result {
             display: none;
             text-align: center;
             margin-top: 15px;
         }
 
-        /* Gambar HD */
         #enhancedImage {
             width: auto;
             max-width: 100%;
             height: auto;
             max-height: 500px;
             border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
             border: 2px solid #00AFFF;
             display: block;
             margin: 0 auto;
         }
 
-        /* Button Download */
         .btn-modern {
             background: #FF5722;
             padding: 10px;
@@ -106,30 +85,24 @@
             color: white;
             display: none;
         }
-
     </style>
 </head>
 <body>
 
-    <!-- Background Video Fullscreen -->
     <video class="video-bg" autoplay loop muted>
         <source src="https://files.catbox.moe/4u8827.mp4" type="video/mp4">
     </video>
 
-    <!-- Kotak Utama -->
-    <div class="container" id="blackBox">
+    <div class="container">
         <h1 class="text-xl font-bold mb-4">🔍 HD-kan Foto Kamu</h1>
 
-        <!-- Drag & Drop Area -->
         <div class="drop-zone" id="dropZone">
             <p>Drag & Drop atau Klik untuk Pilih Gambar</p>
             <input type="file" id="fileInput" class="hidden" accept="image/*">
         </div>
 
-        <!-- Loading -->
         <div id="loading" class="loading">⏳ Memproses gambar...</div>
 
-        <!-- Hasil HD -->
         <div id="result">
             <h2 class="text-md font-semibold">Hasil HD:</h2>
             <img id="enhancedImage">
@@ -186,33 +159,33 @@
             if (!uploadResult.status) throw new Error("Upload gagal");
 
             const imageUrl = uploadResult.result.url_file;
-            const hdUrl = `https://apii.baguss.web.id/tools/remini?apikey=bagus&url=${encodeURIComponent(imageUrl)}`;
 
-            setTimeout(async () => {
-                enhancedImage.src = hdUrl;
+            // Proses HD
+            const hdUrl = `https://apii.bagus.web.id/tools/remini?apikey=bagus&url=${encodeURIComponent(imageUrl)}`;
+            const hdImageResponse = await fetch(hdUrl);
+            const hdImageBlob = await hdImageResponse.blob();
 
-                // Upload ulang gambar HD
-                const hdImageResponse = await fetch(hdUrl);
-                const hdImageBlob = await hdImageResponse.blob();
-                const hdFormData = new FormData();
-                hdFormData.append("file", hdImageBlob, "HD-Image.jpg");
+            // Upload hasil HD
+            const hdFormData = new FormData();
+            hdFormData.append("file", hdImageBlob, "HD-Image.jpg");
 
-                const hdUploadResponse = await fetch("https://filezone-api.caliph.dev/upload", {
-                    method: "POST",
-                    body: hdFormData
-                });
+            const hdUploadResponse = await fetch("https://filezone-api.caliph.dev/upload", {
+                method: "POST",
+                body: hdFormData
+            });
 
-                const hdUploadResult = await hdUploadResponse.json();
-                if (!hdUploadResult.status) throw new Error("Upload gambar HD gagal");
+            const hdUploadResult = await hdUploadResponse.json();
+            if (!hdUploadResult.status) throw new Error("Upload gambar HD gagal");
 
-                uploadLink = hdUploadResult.result.url; // Link download
+            uploadLink = hdUploadResult.result.url; // Link hasil upload di Filezone
 
-                downloadBtn.href = uploadLink;
-                downloadBtn.style.display = "block";
-                downloadBtn.setAttribute("download", "HD-Image.jpg");
-                resultDiv.style.display = "block";
-                loadingText.style.display = "none";
-            }, 2000);
+            enhancedImage.src = hdUploadResult.result.url_file;
+            downloadBtn.href = uploadLink;
+            downloadBtn.style.display = "block";
+            downloadBtn.setAttribute("download", "HD-Image.jpg");
+
+            resultDiv.style.display = "block";
+            loadingText.style.display = "none";
 
         } catch (error) {
             loadingText.style.display = "none";
