@@ -3,11 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bagus HD | Space Edition</title>
+    <title>HD Enhancer | ProjectUp</title>
     <script src="https://cdn.tailwindcss.com"></script>
+
     <style>
-        /* Background video */
-        .video-bg {
+        /* Background Video */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+            text-align: center;
+            color: white;
+        }
+        video {
             position: fixed;
             top: 0;
             left: 0;
@@ -17,62 +26,49 @@
             z-index: -1;
         }
 
-        body {
-            color: white;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            font-family: 'Arial', sans-serif;
-            backdrop-filter: blur(4px);
+        /* Tulisan "Bagus HD" */
+        .typing-effect {
+            position: fixed;
+            top: 20px;
+            left: 30px;
+            font-size: 32px;
+            font-weight: bold;
+            color: cyan;
+            white-space: nowrap;
+            overflow: hidden;
+            border-right: 3px solid white;
+            animation: typing 3s steps(15, end) infinite, blink 0.6s infinite;
+            z-index: 9999;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 5px 15px;
+            border-radius: 8px;
         }
 
-        /* Efek ketik + hapus */
-        /* Biar tulisan "Bagus HD" tetap di pojok kiri atas */
-/* Biar tulisan "Bagus HD" tetap di pojok kiri atas dan nggak ketiban */
-.typing-effect {
-    position: fixed;
-    top: 20px;
-    left: 30px;
-    font-size: 32px;
-    font-weight: bold;
-    color: cyan;
-    white-space: nowrap;
-    overflow: hidden;
-    border-right: 3px solid white;
-    animation: typing 3s steps(15, end) infinite, blink 0.6s infinite;
-    z-index: 9999; /* Supaya selalu paling atas */
-    background: rgba(0, 0, 0, 0.5); /* Tambahin background biar jelas */
-    padding: 5px 10px; /* Biar ada space */
-    border-radius: 5px; /* Biar nggak kaku */
-}
-
         @keyframes typing {
-            0% { width: 0 }
-            50% { width: 200px }
-            100% { width: 0 }
+            from { width: 0; }
+            to { width: 150px; }
         }
 
         @keyframes blink {
             50% { border-color: transparent; }
         }
 
-        /* Kotak utama */
+        /* Container Utama */
         .container {
-            width: 85%;
-            max-width: 500px;
-            text-align: center;
+            width: 90%;
+            max-width: 400px;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 12px;
             padding: 20px;
-            background: rgba(15, 15, 30, 0.8);
-            border-radius: 15px;
-            box-shadow: 0px 0px 20px rgba(0, 255, 255, 0.5);
-            border: 1px solid rgba(0, 255, 255, 0.3);
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+            position: relative;
+            margin: 100px auto 0;
         }
 
+        /* Drop Zone */
         .drop-zone {
-            border: 2px dashed cyan;
-            padding: 30px;
+            border: 2px dashed #00AFFF;
+            padding: 20px;
             border-radius: 12px;
             background: rgba(255, 255, 255, 0.1);
             transition: 0.3s ease-in-out;
@@ -80,69 +76,84 @@
 
         .drop-zone:hover {
             background: rgba(255, 255, 255, 0.2);
-            border-color: #00FFFF;
+            border-color: #007BFF;
         }
 
+        /* Progress Bar */
         .progress-bar-container {
             width: 100%;
-            background: rgba(255, 255, 255, 0.2);
+            background: #555;
             border-radius: 10px;
             overflow: hidden;
+            margin-top: 10px;
         }
 
         .progress-bar {
             height: 6px;
             width: 0;
-            background: linear-gradient(to right, cyan, blue);
+            background: linear-gradient(to right, #00AFFF, #007BFF);
             transition: width 0.4s ease-in-out;
         }
 
-        .hidden { display: none; }
+        /* Gambar HD */
+        #enhancedImage {
+            width: 100%;
+            max-width: 250px;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            border: 2px solid #00AFFF;
+            margin-top: 10px;
+        }
 
+        /* Button Download */
         .btn-modern {
-            background: linear-gradient(90deg, #00FFFF, #007BFF);
+            background: #007BFF;
             padding: 14px;
             border-radius: 10px;
             font-weight: bold;
             width: 100%;
             margin-top: 10px;
             transition: all 0.3s ease-in-out;
-            box-shadow: 0px 0px 10px cyan;
+            text-decoration: none;
+            color: white;
+            display: none; /* Sembunyikan dulu */
         }
 
         .btn-modern:hover {
-            background: linear-gradient(90deg, #007BFF, #00FFFF);
+            background: #0056B3;
             transform: scale(1.05);
         }
 
-        .result-container {
-            display: none;
-            margin-top: 20px;
+        /* Hasil HD */
+        #result {
+            display: none; /* Sembunyikan dulu */
+            margin-top: 15px;
         }
     </style>
 </head>
 <body>
 
     <!-- Background Video -->
-    <video autoplay muted loop class="video-bg">
+    <video autoplay loop muted>
         <source src="https://files.catbox.moe/4u8827.mp4" type="video/mp4">
-        Browser lo gak support video background, coy!
     </video>
 
-    <!-- Efek ketik Bagus HD -->
-    <div class="typing-effect">
-        <!> Bagus HD <!>
-    </div>
+    <!-- Tulisan "Bagus HD" -->
+    <div class="typing-effect">Bagus HD</div>
 
+    <!-- Kotak Utama -->
     <div class="container">
-        <h1 class="text-2xl font-bold mb-4">🚀 HD-kan Foto Kamu</h1>
+        <h1 class="text-2xl font-bold mb-4">🔍 HD-kan Foto Kamu</h1>
 
+        <!-- Drag & Drop Area -->
         <div class="drop-zone" id="dropZone">
             <p>Drag & Drop atau Klik untuk Pilih Gambar</p>
             <input type="file" id="fileInput" class="hidden" accept="image/*">
         </div>
 
-        <div id="progress" class="hidden mt-4">
+        <!-- Progress Bar -->
+        <div id="progress" class="hidden">
             <p class="text-sm text-gray-300">Mengunggah...</p>
             <div class="progress-bar-container">
                 <div id="progressBar" class="progress-bar"></div>
@@ -150,21 +161,16 @@
         </div>
 
         <!-- Hasil HD -->
-        <div id="result" class="result-container">
+        <div id="result">
             <h2 class="text-lg font-semibold">Hasil HD:</h2>
-            <img id="enhancedImage" class="mt-4 rounded-lg shadow-md border border-gray-300 w-full">
-            <a id="downloadBtn" href="#" class="btn-modern block mt-4">📥 Download Gambar</a>
+            <img id="enhancedImage">
+            <a id="downloadBtn" href="#" class="btn-modern">📥 Download Gambar</a>
         </div>
     </div>
 
 <script>
     const dropZone = document.getElementById("dropZone");
     const fileInput = document.getElementById("fileInput");
-    const progress = document.getElementById("progress");
-    const progressBar = document.getElementById("progressBar");
-    const resultDiv = document.getElementById("result");
-    const enhancedImage = document.getElementById("enhancedImage");
-    const downloadBtn = document.getElementById("downloadBtn");
 
     dropZone.addEventListener("click", () => fileInput.click());
     dropZone.addEventListener("dragover", (e) => {
@@ -176,12 +182,18 @@
         e.preventDefault();
         dropZone.style.background = "rgba(255, 255, 255, 0.1)";
         fileInput.files = e.dataTransfer.files;
-        uploadFile();
+        processFile();
     });
 
-    fileInput.addEventListener("change", () => uploadFile());
+    fileInput.addEventListener("change", processFile);
 
-    async function uploadFile() {
+    async function processFile() {
+        const progress = document.getElementById('progress');
+        const progressBar = document.getElementById('progressBar');
+        const resultDiv = document.getElementById("result");
+        const enhancedImage = document.getElementById("enhancedImage");
+        const downloadBtn = document.getElementById("downloadBtn");
+
         if (!fileInput.files.length) {
             alert("Pilih gambar terlebih dahulu!");
             return;
@@ -199,8 +211,8 @@
                 method: "POST",
                 body: formData
             });
-            progressBar.style.width = "50%";
 
+            progressBar.style.width = "50%";
             const uploadResult = await uploadResponse.json();
             if (!uploadResult.status) throw new Error("Upload gagal");
 
@@ -208,11 +220,12 @@
             const hdUrl = `https://apii.baguss.web.id/tools/remini?apikey=bagus&url=${encodeURIComponent(imageUrl)}`;
 
             enhancedImage.src = hdUrl;
-            resultDiv.style.display = "block";  // Munculin hasil, tulisan, & tombol barengan
-
-            progressBar.style.width = "100%";
+            resultDiv.style.display = "block"; 
+            downloadBtn.style.display = "block"; 
             downloadBtn.href = hdUrl;
             downloadBtn.setAttribute("download", "HD-Image.jpg");
+
+            progressBar.style.width = "100%";
         } catch (error) {
             alert("Terjadi kesalahan: " + error.message);
         } finally {
