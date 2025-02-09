@@ -7,21 +7,23 @@
     <script src="https://cdn.tailwindcss.com"></script>
 
     <style>
-        /* Background Video */
-        body {
+        /* Background Video Fullscreen */
+        body, html {
             margin: 0;
             padding: 0;
+            height: 100%;
+            overflow: hidden; /* Biar ga ada scroll */
             font-family: 'Arial', sans-serif;
             text-align: center;
             color: white;
-            background: #000;
         }
-        video {
+        
+        .video-bg {
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
+            width: 100vw;
+            height: 100vh;
             object-fit: cover;
             z-index: -1;
         }
@@ -109,8 +111,8 @@
 </head>
 <body>
 
-    <!-- Background Video -->
-    <video autoplay loop muted>
+    <!-- Background Video Fullscreen -->
+    <video class="video-bg" autoplay loop muted>
         <source src="https://files.catbox.moe/4u8827.mp4" type="video/mp4">
     </video>
 
