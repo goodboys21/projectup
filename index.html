@@ -26,33 +26,24 @@
             z-index: -1;
         }
 
-        /* Efek ketik */
-        @keyframes typing {
-            from { width: 0; }
-            to { width: 100%; }
-        }
-        @keyframes blink {
-            50% { border-color: transparent; }
-        }
-        .typing-effect {
+        /* Tulisan "Bagus HD" Pudar */
+        .bg-text {
             position: absolute;
-            top: 30px;
+            top: 20%;
             left: 50%;
             transform: translateX(-50%);
-            font-size: 24px;
+            font-size: 36px;
             font-weight: bold;
-            color: cyan;
-            white-space: nowrap;
-            overflow: hidden;
-            border-right: 3px solid white;
-            animation: typing 3s steps(15, end) infinite, blink 0.6s infinite;
+            color: rgba(0, 255, 255, 0.2); /* Transparan */
+            z-index: 1;
+            user-select: none;
         }
 
         /* Container Utama */
         .container {
             width: 90%;
-            max-width: 320px;
-            background: rgba(0, 0, 0, 0.7);
+            max-width: 400px;
+            background: rgba(0, 0, 0, 0.8);
             border-radius: 12px;
             padding: 15px;
             box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
@@ -60,6 +51,7 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
+            z-index: 2;
         }
 
         /* Drop Zone */
@@ -79,15 +71,23 @@
             margin-top: 10px;
         }
 
+        /* Hasil HD (di tengah) */
+        #result {
+            display: none;
+            text-align: center;
+            margin-top: 15px;
+        }
+
         /* Gambar HD */
         #enhancedImage {
-            width: 100%;
-            max-width: 180px;
+            width: 80%;
+            max-width: 220px;
             height: auto;
             border-radius: 10px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
             border: 2px solid #00AFFF;
-            margin-top: 10px;
+            display: block;
+            margin: 0 auto;
         }
 
         /* Button Download */
@@ -103,23 +103,17 @@
             display: none;
         }
 
-        /* Hasil HD */
-        #result {
-            display: none;
-            margin-top: 15px;
-            text-align: center;
-        }
     </style>
 </head>
 <body>
+
+    <!-- Tulisan "Bagus HD" Pudar -->
+    <div class="bg-text">Bagus HD</div>
 
     <!-- Background Video -->
     <video autoplay loop muted>
         <source src="https://files.catbox.moe/4u8827.mp4" type="video/mp4">
     </video>
-
-    <!-- Tulisan "Bagus HD" -->
-    <div class="typing-effect">Bagus HD</div>
 
     <!-- Kotak Utama -->
     <div class="container">
