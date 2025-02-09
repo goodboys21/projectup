@@ -74,16 +74,11 @@
             margin: 0 auto;
         }
 
-        .btn-modern {
-            background: #FF5722;
-            padding: 10px;
-            border-radius: 8px;
-            font-weight: bold;
-            width: 100%;
+        .info-text {
+            color: #00FF00;
+            font-size: 14px;
             margin-top: 10px;
-            text-decoration: none;
-            color: white;
-            display: none;
+            font-weight: bold;
         }
     </style>
 </head>
@@ -106,7 +101,7 @@
         <div id="result">
             <h2 class="text-md font-semibold">Hasil HD:</h2>
             <img id="enhancedImage">
-            <a id="downloadBtn" href="#" class="btn-modern">📥 Download Gambar</a>
+            <p class="info-text">✅ Foto berhasil di HD-kan! <br> Tekan lama pada foto lalu pilih "Download Gambar". <br> <b>By: Bagus Bahril</b></p>
         </div>
     </div>
 
@@ -116,9 +111,6 @@
     const loadingText = document.getElementById("loading");
     const resultDiv = document.getElementById("result");
     const enhancedImage = document.getElementById("enhancedImage");
-    const downloadBtn = document.getElementById("downloadBtn");
-
-    let uploadLink = "";
 
     dropZone.addEventListener("click", () => fileInput.click());
     dropZone.addEventListener("dragover", (e) => {
@@ -177,19 +169,10 @@
             const hdUploadResult = await hdUploadResponse.json();
             if (!hdUploadResult.status) throw new Error("Upload gambar HD gagal");
 
-            uploadLink = hdUploadResult.result.url; // Link hasil upload di Filezone
-
             enhancedImage.src = hdUploadResult.result.url_file;
-            downloadBtn.href = uploadLink;
-            downloadBtn.style.display = "block";
 
             resultDiv.style.display = "block";
             loadingText.style.display = "none";
-
-            // Auto-download setelah upload sukses
-            setTimeout(() => {
-                window.location.href = uploadLink;
-            }, 1000);
 
         } catch (error) {
             loadingText.style.display = "none";
