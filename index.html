@@ -42,17 +42,18 @@
             z-index: 2;
         }
 
+        /* Efek Blur Cerah di Kotak Hitam */
         #blackBox {
-    background: rgba(0, 0, 0, 0.7); /* Hitam transparan */
-    backdrop-filter: blur(10px); /* Efek blur */
-    box-shadow: 0 0 20px rgba(255, 255, 255, 0.6), /* Efek cerah */
-                0 0 40px rgba(255, 255, 255, 0.4), 
-                0 0 60px rgba(255, 255, 255, 0.2); 
-    padding: 20px;
-    border-radius: 10px;
-    color: white;
-    text-align: center;
-}
+            background: rgba(0, 0, 0, 0.7); /* Warna hitam transparan */
+            backdrop-filter: blur(10px); /* Efek blur */
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.6), 
+                        0 0 40px rgba(255, 255, 255, 0.4), 
+                        0 0 60px rgba(255, 255, 255, 0.2); /* Efek cerah */
+            padding: 20px;
+            border-radius: 10px;
+            color: white;
+            text-align: center;
+        }
 
         /* Drop Zone */
         .drop-zone {
@@ -71,7 +72,7 @@
             margin-top: 10px;
         }
 
-        /* Hasil HD (Gambar Menyesuaikan Ukuran Aslinya) */
+        /* Hasil HD */
         #result {
             display: none;
             text-align: center;
@@ -80,16 +81,16 @@
 
         /* Gambar HD */
         #enhancedImage {
-    width: auto;
-    max-width: 100%;
-    height: auto;
-    max-height: 500px; /* Batas maksimal tinggi gambar */
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-    border: 2px solid #00AFFF;
-    display: block;
-    margin: 0 auto;
-}
+            width: auto;
+            max-width: 100%;
+            height: auto;
+            max-height: 500px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            border: 2px solid #00AFFF;
+            display: block;
+            margin: 0 auto;
+        }
 
         /* Button Download */
         .btn-modern {
@@ -114,7 +115,7 @@
     </video>
 
     <!-- Kotak Utama -->
-    <div class="container">
+    <div class="container" id="blackBox">
         <h1 class="text-xl font-bold mb-4">🔍 HD-kan Foto Kamu</h1>
 
         <!-- Drag & Drop Area -->
