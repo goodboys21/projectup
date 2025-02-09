@@ -79,16 +79,18 @@
         }
 
         /* Gambar HD */
-        #enhancedImage {
-            width: 80%;
-            max-width: 220px;
-            height: auto;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-            border: 2px solid #00AFFF;
-            display: block;
-            margin: 0 auto;
-        }
+#enhancedImage {
+    width: 100%; /* Gunakan 100% biar menyesuaikan lebar parent */
+    max-width: 300px; /* Maksimal ukuran */
+    height: auto; /* Biar proporsional */
+    max-height: 250px; /* Batasi tinggi biar gak terlalu panjang */
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    border: 2px solid #00AFFF;
+    display: block;
+    margin: 0 auto;
+    object-fit: contain; /* Biar gambar nggak kepotong */
+}
 
         /* Button Download */
         .btn-modern {
