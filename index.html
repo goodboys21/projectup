@@ -12,9 +12,9 @@
             margin: 0;
             padding: 0;
             font-family: 'Arial', sans-serif;
-            overflow: hidden;
             text-align: center;
             color: white;
+            background: #000;
         }
         video {
             position: fixed;
@@ -26,9 +26,9 @@
             z-index: -1;
         }
 
-        /* Tulisan "Bagus HD" */
+        /* Efek ketik + hapus */
         .typing-effect {
-            position: fixed;
+            position: absolute;
             top: 20px;
             left: 30px;
             font-size: 32px;
@@ -38,19 +38,6 @@
             overflow: hidden;
             border-right: 3px solid white;
             animation: typing 3s steps(15, end) infinite, blink 0.6s infinite;
-            z-index: 9999;
-            background: rgba(0, 0, 0, 0.5);
-            padding: 5px 15px;
-            border-radius: 8px;
-        }
-
-        @keyframes typing {
-            from { width: 0; }
-            to { width: 150px; }
-        }
-
-        @keyframes blink {
-            50% { border-color: transparent; }
         }
 
         /* Container Utama */
@@ -74,31 +61,10 @@
             transition: 0.3s ease-in-out;
         }
 
-        .drop-zone:hover {
-            background: rgba(255, 255, 255, 0.2);
-            border-color: #007BFF;
-        }
-
-        /* Progress Bar */
-        .progress-bar-container {
-            width: 100%;
-            background: #555;
-            border-radius: 10px;
-            overflow: hidden;
-            margin-top: 10px;
-        }
-
-        .progress-bar {
-            height: 6px;
-            width: 0;
-            background: linear-gradient(to right, #00AFFF, #007BFF);
-            transition: width 0.4s ease-in-out;
-        }
-
         /* Gambar HD */
         #enhancedImage {
             width: 100%;
-            max-width: 250px;
+            max-width: 220px;
             height: auto;
             border-radius: 10px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
@@ -109,20 +75,14 @@
         /* Button Download */
         .btn-modern {
             background: #007BFF;
-            padding: 14px;
-            border-radius: 10px;
+            padding: 12px;
+            border-radius: 8px;
             font-weight: bold;
             width: 100%;
             margin-top: 10px;
-            transition: all 0.3s ease-in-out;
             text-decoration: none;
             color: white;
             display: none; /* Sembunyikan dulu */
-        }
-
-        .btn-modern:hover {
-            background: #0056B3;
-            transform: scale(1.05);
         }
 
         /* Hasil HD */
@@ -150,14 +110,6 @@
         <div class="drop-zone" id="dropZone">
             <p>Drag & Drop atau Klik untuk Pilih Gambar</p>
             <input type="file" id="fileInput" class="hidden" accept="image/*">
-        </div>
-
-        <!-- Progress Bar -->
-        <div id="progress" class="hidden">
-            <p class="text-sm text-gray-300">Mengunggah...</p>
-            <div class="progress-bar-container">
-                <div id="progressBar" class="progress-bar"></div>
-            </div>
         </div>
 
         <!-- Hasil HD -->
@@ -188,8 +140,6 @@
     fileInput.addEventListener("change", processFile);
 
     async function processFile() {
-        const progress = document.getElementById('progress');
-        const progressBar = document.getElementById('progressBar');
         const resultDiv = document.getElementById("result");
         const enhancedImage = document.getElementById("enhancedImage");
         const downloadBtn = document.getElementById("downloadBtn");
@@ -198,9 +148,6 @@
             alert("Pilih gambar terlebih dahulu!");
             return;
         }
-
-        progress.classList.remove("hidden");
-        progressBar.style.width = "20%";
 
         const file = fileInput.files[0];
         const formData = new FormData();
@@ -212,7 +159,6 @@
                 body: formData
             });
 
-            progressBar.style.width = "50%";
             const uploadResult = await uploadResponse.json();
             if (!uploadResult.status) throw new Error("Upload gagal");
 
@@ -220,16 +166,14 @@
             const hdUrl = `https://apii.baguss.web.id/tools/remini?apikey=bagus&url=${encodeURIComponent(imageUrl)}`;
 
             enhancedImage.src = hdUrl;
-            resultDiv.style.display = "block"; 
-            downloadBtn.style.display = "block"; 
             downloadBtn.href = hdUrl;
             downloadBtn.setAttribute("download", "HD-Image.jpg");
 
-            progressBar.style.width = "100%";
+            // Tampilkan hasil & button download bareng
+            resultDiv.style.display = "block"; 
+            downloadBtn.style.display = "block"; 
         } catch (error) {
             alert("Terjadi kesalahan: " + error.message);
-        } finally {
-            setTimeout(() => progress.classList.add("hidden"), 2000);
         }
     }
 </script>
