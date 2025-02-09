@@ -43,12 +43,14 @@
         }
 
         #blackBox {
-    background: rgba(0, 0, 0, 0.7); /* Warna hitam dengan transparansi */
+    background: rgba(0, 0, 0, 0.7); /* Hitam transparan */
     backdrop-filter: blur(10px); /* Efek blur */
-    box-shadow: 0 0 15px rgba(255, 255, 255, 0.5); /* Efek cerah di pinggirannya */
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.6), /* Efek cerah */
+                0 0 40px rgba(255, 255, 255, 0.4), 
+                0 0 60px rgba(255, 255, 255, 0.2); 
     padding: 20px;
     border-radius: 10px;
-    color: white; /* Biar teks tetap jelas */
+    color: white;
     text-align: center;
 }
 
