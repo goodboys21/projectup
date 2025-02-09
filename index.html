@@ -26,11 +26,19 @@
             z-index: -1;
         }
 
-        /* Efek ketik + hapus */
+        /* Efek ketik */
+        @keyframes typing {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+        @keyframes blink {
+            50% { border-color: transparent; }
+        }
         .typing-effect {
             position: absolute;
-            top: 20px;
-            left: 30px;
+            top: 50px;
+            left: 50%;
+            transform: translateX(-50%);
             font-size: 32px;
             font-weight: bold;
             color: cyan;
@@ -48,8 +56,10 @@
             border-radius: 12px;
             padding: 20px;
             box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
-            position: relative;
-            margin: 100px auto 0;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
         }
 
         /* Drop Zone */
@@ -59,6 +69,14 @@
             border-radius: 12px;
             background: rgba(255, 255, 255, 0.1);
             transition: 0.3s ease-in-out;
+        }
+
+        /* Loading */
+        .loading {
+            display: none;
+            font-weight: bold;
+            color: cyan;
+            margin-top: 10px;
         }
 
         /* Gambar HD */
@@ -74,7 +92,7 @@
 
         /* Button Download */
         .btn-modern {
-            background: #007BFF;
+            background: #FF5722;
             padding: 12px;
             border-radius: 8px;
             font-weight: bold;
@@ -82,12 +100,12 @@
             margin-top: 10px;
             text-decoration: none;
             color: white;
-            display: none; /* Sembunyikan dulu */
+            display: none;
         }
 
         /* Hasil HD */
         #result {
-            display: none; /* Sembunyikan dulu */
+            display: none;
             margin-top: 15px;
         }
     </style>
@@ -112,6 +130,9 @@
             <input type="file" id="fileInput" class="hidden" accept="image/*">
         </div>
 
+        <!-- Loading -->
+        <div id="loading" class="loading">⏳ Memproses gambar...</div>
+
         <!-- Hasil HD -->
         <div id="result">
             <h2 class="text-lg font-semibold">Hasil HD:</h2>
@@ -123,6 +144,10 @@
 <script>
     const dropZone = document.getElementById("dropZone");
     const fileInput = document.getElementById("fileInput");
+    const loadingText = document.getElementById("loading");
+    const resultDiv = document.getElementById("result");
+    const enhancedImage = document.getElementById("enhancedImage");
+    const downloadBtn = document.getElementById("downloadBtn");
 
     dropZone.addEventListener("click", () => fileInput.click());
     dropZone.addEventListener("dragover", (e) => {
@@ -140,10 +165,6 @@
     fileInput.addEventListener("change", processFile);
 
     async function processFile() {
-        const resultDiv = document.getElementById("result");
-        const enhancedImage = document.getElementById("enhancedImage");
-        const downloadBtn = document.getElementById("downloadBtn");
-
         if (!fileInput.files.length) {
             alert("Pilih gambar terlebih dahulu!");
             return;
@@ -152,6 +173,10 @@
         const file = fileInput.files[0];
         const formData = new FormData();
         formData.append("file", file);
+
+        // Tampilkan loading
+        loadingText.style.display = "block";
+        resultDiv.style.display = "none";
 
         try {
             const uploadResponse = await fetch("https://filezone-api.caliph.dev/upload", {
@@ -165,14 +190,20 @@
             const imageUrl = uploadResult.result.url_file;
             const hdUrl = `https://apii.baguss.web.id/tools/remini?apikey=bagus&url=${encodeURIComponent(imageUrl)}`;
 
-            enhancedImage.src = hdUrl;
-            downloadBtn.href = hdUrl;
-            downloadBtn.setAttribute("download", "HD-Image.jpg");
+            // Delay simulasi loading (biar efeknya smooth)
+            setTimeout(() => {
+                loadingText.style.display = "none";
+                enhancedImage.src = hdUrl;
+                downloadBtn.href = hdUrl;
+                downloadBtn.setAttribute("download", "HD-Image.jpg");
 
-            // Tampilkan hasil & button download bareng
-            resultDiv.style.display = "block"; 
-            downloadBtn.style.display = "block"; 
+                // Tampilkan hasil & button download bareng
+                resultDiv.style.display = "block"; 
+                downloadBtn.style.display = "block"; 
+            }, 2000);
+
         } catch (error) {
+            loadingText.style.display = "none";
             alert("Terjadi kesalahan: " + error.message);
         }
     }
